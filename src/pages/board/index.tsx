@@ -1,9 +1,10 @@
+import Chessboard from "@/components/common/elements/chessboard/Chessboard";
 
 
 export default function BoardPage() {
   return (
     <div>
-      <h1>Board Page</h1>
+      <Chessboard />
     </div>
   );
 }
