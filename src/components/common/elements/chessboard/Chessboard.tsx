@@ -16,39 +16,26 @@ export default function Chessboard() {
 
   const pieces: PiecePosition[] = [];
 
+  for (let color = 0; color < 2; color++) {
+    const [pawnY, y, pieceColor] = color === 0 ? [1, 0, "w"] : [6, 7, "b"];
+
   for (let i = 0; i < 8; i++) {
-    pieces.push({
-      piece: "wP",
-      x: i,
-      y: 1,
-    });
-    pieces.push({
-      piece: "bP",
-      x: i,
-      y: 6,
-    });
+    pieces.push({ piece: `${pieceColor}P`, x: i, y: pawnY });
   }
 
-  pieces.push({ piece: "wR", x: 0, y: 0 });
-  pieces.push({ piece: "wR", x: 7, y: 0 });
-  pieces.push({ piece: "bR", x: 0, y: 7 });
-  pieces.push({ piece: "bR", x: 7, y: 7 });
+  pieces.push({ piece: `${pieceColor}R`, x: 0, y });
+  pieces.push({ piece: `${pieceColor}R`, x: 7, y });
 
-  pieces.push({ piece: "wN", x: 1, y: 0 });
-  pieces.push({ piece: "wN", x: 6, y: 0 });
-  pieces.push({ piece: "bN", x: 1, y: 7 });
-  pieces.push({ piece: "bN", x: 6, y: 7 });
+  pieces.push({ piece: `${pieceColor}N`, x: 1, y });
+  pieces.push({ piece: `${pieceColor}N`, x: 6, y });
 
-  pieces.push({ piece: "wB", x: 2, y: 0 });
-  pieces.push({ piece: "wB", x: 5, y: 0 });
-  pieces.push({ piece: "bB", x: 2, y: 7 });
-  pieces.push({ piece: "bB", x: 5, y: 7 });
+  pieces.push({ piece: `${pieceColor}B`, x: 2, y });
+  pieces.push({ piece: `${pieceColor}B`, x: 5, y });
 
-  pieces.push({ piece: "wQ", x: 3, y: 0 });
-  pieces.push({ piece: "bQ", x: 3, y: 7 });
+  pieces.push({ piece: `${pieceColor}Q`, x: 3, y });
 
-  pieces.push({ piece: "wK", x: 4, y: 0 });
-  pieces.push({ piece: "bK", x: 4, y: 7 });
+  pieces.push({ piece: `${pieceColor}K`, x: 4, y });
+}
 
 
   let board = [];
