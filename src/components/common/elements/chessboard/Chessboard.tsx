@@ -47,7 +47,6 @@ export default function Chessboard() {
       const y = e.clientY - 50;
 
       piece.style.position = "absolute";
-      piece.style.zIndex = "1000";
       piece.style.left = `${x}px`;
       piece.style.top = `${y}px`;
 
