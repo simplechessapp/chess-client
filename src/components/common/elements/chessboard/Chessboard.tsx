@@ -45,7 +45,7 @@ export default function Chessboard() {
     if (piece.classList.contains(pieceStyles["piece"])) {
       const x = e.clientX - 50;
       const y = e.clientY - 50;
-
+      console.log(x, y);
       piece.style.position = "absolute";
       piece.style.left = `${x}px`;
       piece.style.top = `${y}px`;
