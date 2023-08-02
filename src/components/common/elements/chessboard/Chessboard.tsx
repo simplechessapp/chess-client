@@ -47,7 +47,7 @@ export default function Chessboard() {
     if (piece.classList.contains(pieceStyles["piece"])) {
       const x = e.clientX - 50;
       const y = e.clientY - 50;
-      piece.style.position = "absolute";
+      piece.style.position = "fixed";
       piece.style.left = `${x}px`;
       piece.style.top = `${y}px`;
 
@@ -67,14 +67,31 @@ export default function Chessboard() {
   function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
     if (grabbedPiece !== null && chessBoardRef.current !== null) {
       const chessBoard = chessBoardRef.current.getBoundingClientRect();
+      console.log(e);
       const dropX = e.clientX;
       const dropY = e.clientY;
 
+      if (
+        dropX < chessBoard.left ||
+        dropX > chessBoard.right ||
+        dropY < chessBoard.top ||
+        dropY > chessBoard.bottom
+      ) {
+        grabbedPiece?.style.removeProperty("position");
+      }
+
       const piece = e.target as HTMLDivElement;
-      console.log(piece);
-      
-      const pieceX = (dropX - chessBoard.left) - ((dropX - chessBoard.left) % 100) + chessBoard.left;
-      const pieceY = (dropY - chessBoard.top) - ((dropY - chessBoard.top) % 100) + chessBoard.top;
+
+      const pieceX =
+        dropX -
+        chessBoard.left -
+        ((dropX - chessBoard.left) % 100) +
+        chessBoard.left;
+      const pieceY =
+        dropY -
+        chessBoard.top -
+        ((dropY - chessBoard.top) % 100) +
+        chessBoard.top;
 
       grabbedPiece.style.left = `${pieceX}px`;
       grabbedPiece.style.top = `${pieceY}px`;
