@@ -11,6 +11,11 @@ interface PiecePosition {
   y: number;
 }
 
+interface PieceStartPos {
+  x: number;
+  y: number;
+}
+
 const initialPieces: PiecePosition[] = [];
 
 for (let color = 0; color < 2; color++) {
@@ -39,20 +44,31 @@ export default function Chessboard() {
   const horizontalAxes = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
   const chessBoardRef = useRef<HTMLDivElement>(null);
+
   const [grabbedPiece, setGrabbedPiece] = React.useState<HTMLElement | null>(
     null
   );
-
+  const [startPos, setStartPos] = React.useState<PieceStartPos>({ x: 0, y: 0 });
   const [pieces, setPieces] = React.useState<PiecePosition[]>(initialPieces);
+
+
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
-    if (piece.classList.contains(pieceStyles["piece"])) {
+    if (
+      piece.classList.contains(pieceStyles["piece"]) &&
+      chessBoardRef.current
+    ) {
       const x = e.clientX - 50;
       const y = e.clientY - 50;
       piece.style.position = "fixed";
       piece.style.left = `${x}px`;
       piece.style.top = `${y}px`;
+
+      setStartPos({
+        x: Math.floor((e.clientX - chessBoardRef.current.offsetLeft) / 100),
+        y: 7 - Math.floor((e.clientY - chessBoardRef.current.offsetTop) / 100),
+      });
 
       setGrabbedPiece(piece);
     }
@@ -68,37 +84,25 @@ export default function Chessboard() {
   }
 
   function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
-    if (grabbedPiece !== null && chessBoardRef.current !== null) {
+    if (grabbedPiece && chessBoardRef.current) {
       const chessBoard = chessBoardRef.current.getBoundingClientRect();
-      console.log(e);
-      const dropX = e.clientX;
-      const dropY = e.clientY;
+      const dropX = e.clientX - chessBoard.left;
+      const dropY = e.clientY - chessBoard.top;
 
-      if (
-        dropX < chessBoard.left ||
-        dropX > chessBoard.right ||
-        dropY < chessBoard.top ||
-        dropY > chessBoard.bottom
-      ) {
-        grabbedPiece?.style.removeProperty("position");
-      }
+      const cellX = Math.floor(dropX / 100);
+      const cellY = 7 - Math.floor(dropY / 100);
 
-      const piece = e.target as HTMLDivElement;
+      setPieces(
+        pieces.map((piece) => {
+          if (piece.x === startPos.x && piece.y === startPos.y) {
+            return { ...piece, x: cellX, y: cellY };
+          } else {
+            return piece;
+          }
+        })
+      );
 
-      const pieceX =
-        dropX -
-        chessBoard.left -
-        ((dropX - chessBoard.left) % 100) +
-        chessBoard.left;
-      const pieceY =
-        dropY -
-        chessBoard.top -
-        ((dropY - chessBoard.top) % 100) +
-        chessBoard.top;
-
-      grabbedPiece.style.left = `${pieceX}px`;
-      grabbedPiece.style.top = `${pieceY}px`;
-
+      grabbedPiece.style.position = "static";
       setGrabbedPiece(null);
     }
   }
