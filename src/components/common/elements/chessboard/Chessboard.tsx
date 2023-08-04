@@ -11,36 +11,39 @@ interface PiecePosition {
   y: number;
 }
 
+const initialPieces: PiecePosition[] = [];
+
+for (let color = 0; color < 2; color++) {
+  const [pawnY, y, pieceColor] = color === 0 ? [1, 0, "w"] : [6, 7, "b"];
+
+  for (let i = 0; i < 8; i++) {
+    initialPieces.push({ piece: `${pieceColor}P`, x: i, y: pawnY });
+  }
+
+  initialPieces.push({ piece: `${pieceColor}R`, x: 0, y });
+  initialPieces.push({ piece: `${pieceColor}R`, x: 7, y });
+
+  initialPieces.push({ piece: `${pieceColor}N`, x: 1, y });
+  initialPieces.push({ piece: `${pieceColor}N`, x: 6, y });
+
+  initialPieces.push({ piece: `${pieceColor}B`, x: 2, y });
+  initialPieces.push({ piece: `${pieceColor}B`, x: 5, y });
+
+  initialPieces.push({ piece: `${pieceColor}Q`, x: 3, y });
+
+  initialPieces.push({ piece: `${pieceColor}K`, x: 4, y });
+}
+
 export default function Chessboard() {
   const verticalAxes = [1, 2, 3, 4, 5, 6, 7, 8];
   const horizontalAxes = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
   const chessBoardRef = useRef<HTMLDivElement>(null);
+  const [grabbedPiece, setGrabbedPiece] = React.useState<HTMLElement | null>(
+    null
+  );
 
-  const pieces: PiecePosition[] = [];
-
-  let grabbedPiece: HTMLElement | null = null;
-
-  for (let color = 0; color < 2; color++) {
-    const [pawnY, y, pieceColor] = color === 0 ? [1, 0, "w"] : [6, 7, "b"];
-
-    for (let i = 0; i < 8; i++) {
-      pieces.push({ piece: `${pieceColor}P`, x: i, y: pawnY });
-    }
-
-    pieces.push({ piece: `${pieceColor}R`, x: 0, y });
-    pieces.push({ piece: `${pieceColor}R`, x: 7, y });
-
-    pieces.push({ piece: `${pieceColor}N`, x: 1, y });
-    pieces.push({ piece: `${pieceColor}N`, x: 6, y });
-
-    pieces.push({ piece: `${pieceColor}B`, x: 2, y });
-    pieces.push({ piece: `${pieceColor}B`, x: 5, y });
-
-    pieces.push({ piece: `${pieceColor}Q`, x: 3, y });
-
-    pieces.push({ piece: `${pieceColor}K`, x: 4, y });
-  }
+  const [pieces, setPieces] = React.useState<PiecePosition[]>(initialPieces);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
@@ -51,7 +54,7 @@ export default function Chessboard() {
       piece.style.left = `${x}px`;
       piece.style.top = `${y}px`;
 
-      grabbedPiece = piece;
+      setGrabbedPiece(piece);
     }
   }
 
@@ -96,7 +99,7 @@ export default function Chessboard() {
       grabbedPiece.style.left = `${pieceX}px`;
       grabbedPiece.style.top = `${pieceY}px`;
 
-      grabbedPiece = null;
+      setGrabbedPiece(null);
     }
   }
 
