@@ -5,7 +5,7 @@ import styles from "./Chessboard.module.scss";
 import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
-import { PiecePosition } from "@/utils/types/PiecePosition.type";
+import { PiecePosition } from "@/utils/types";
 
 interface PieceStartPos {
   x: number;
