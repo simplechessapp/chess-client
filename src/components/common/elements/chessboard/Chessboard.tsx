@@ -13,8 +13,6 @@ interface PieceStartPos {
 }
 
 export default function Chessboard() {
-  const verticalAxes = [1, 2, 3, 4, 5, 6, 7, 8];
-  const horizontalAxes = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
   const chessBoardRef = useRef<HTMLDivElement>(null);
 
