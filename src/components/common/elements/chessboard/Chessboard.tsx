@@ -4,39 +4,12 @@ import React, { useRef } from "react";
 import styles from "./Chessboard.module.scss";
 import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
-
-interface PiecePosition {
-  piece: string;
-  x: number;
-  y: number;
-}
+import { initialBoard } from "@/utils/constants";
+import { PiecePosition } from "@/utils/types/PiecePosition.type";
 
 interface PieceStartPos {
   x: number;
   y: number;
-}
-
-const initialPieces: PiecePosition[] = [];
-
-for (let color = 0; color < 2; color++) {
-  const [pawnY, y, pieceColor] = color === 0 ? [1, 0, "w"] : [6, 7, "b"];
-
-  for (let i = 0; i < 8; i++) {
-    initialPieces.push({ piece: `${pieceColor}P`, x: i, y: pawnY });
-  }
-
-  initialPieces.push({ piece: `${pieceColor}R`, x: 0, y });
-  initialPieces.push({ piece: `${pieceColor}R`, x: 7, y });
-
-  initialPieces.push({ piece: `${pieceColor}N`, x: 1, y });
-  initialPieces.push({ piece: `${pieceColor}N`, x: 6, y });
-
-  initialPieces.push({ piece: `${pieceColor}B`, x: 2, y });
-  initialPieces.push({ piece: `${pieceColor}B`, x: 5, y });
-
-  initialPieces.push({ piece: `${pieceColor}Q`, x: 3, y });
-
-  initialPieces.push({ piece: `${pieceColor}K`, x: 4, y });
 }
 
 export default function Chessboard() {
@@ -49,9 +22,7 @@ export default function Chessboard() {
     null
   );
   const [startPos, setStartPos] = React.useState<PieceStartPos>({ x: 0, y: 0 });
-  const [pieces, setPieces] = React.useState<PiecePosition[]>(initialPieces);
-
-
+  const [pieces, setPieces] = React.useState<PiecePosition[]>(initialBoard);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
