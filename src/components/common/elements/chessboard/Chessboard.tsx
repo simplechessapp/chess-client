@@ -5,7 +5,7 @@ import styles from "./Chessboard.module.scss";
 import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
-import { PiecePosition, PieceStartPos } from "@/utils/types";
+import { PiecePosition, PieceCoordinates } from "@/utils/types";
 
 export default function Chessboard() {
 
@@ -14,7 +14,7 @@ export default function Chessboard() {
   const [grabbedPiece, setGrabbedPiece] = React.useState<HTMLElement | null>(
     null
   );
-  const [startPos, setStartPos] = React.useState<PieceStartPos>({ x: 0, y: 0 });
+  const [startPos, setStartPos] = React.useState<PieceCoordinates>({ x: 0, y: 0 });
   const [pieces, setPieces] = React.useState<PiecePosition[]>(initialBoard);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
@@ -81,6 +81,7 @@ export default function Chessboard() {
           key={cellNumber}
           colorNumber={i + j + 2}
           piece={pieces.find((piece) => piece.x === j && piece.y === i)?.piece}
+          color={pieces.find((piece) => piece.x === j && piece.y === i)?.color}
         />
       );
     }
