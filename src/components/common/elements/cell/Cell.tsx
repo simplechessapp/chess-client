@@ -1,11 +1,13 @@
+import { ColorEnum, PieceEnum } from "@/utils/enums";
 import styles from "./Cell.module.scss";
 
 interface CellProps {
   colorNumber: number;
-  piece?: string;
+  piece?: PieceEnum;
+  color?: ColorEnum;
 }
 
-export default function Cell({ colorNumber, piece }: CellProps) {
+export default function Cell({ colorNumber, piece, color }: CellProps) {
   const className: string = [
     styles["cell"],
     colorNumber % 2 === 0 ? styles["white"] : styles["black"],
@@ -15,7 +17,7 @@ export default function Cell({ colorNumber, piece }: CellProps) {
     <div className={className}>
       <div
         className={styles["piece"]}
-        style={piece ? { backgroundImage: `url(/pieces/${piece}.svg)` } : {}}
+        style={ (piece && color) ? { backgroundImage: `url(/pieces/${color}${piece}.svg)` } : {} }
       ></div>
     </div>
   );
