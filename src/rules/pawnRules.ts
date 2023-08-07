@@ -28,6 +28,14 @@ export function isValidPawnMove(
         pieceEnd.y === pieceStart.y + moveDirection * 2) &&
       pieceEnd.x === pieceStart.x
     ) {
+      // if there is a piece in the way, return false
+      const pieceInWay = board.find(
+        (piece) =>
+          piece.x === pieceStart.x && piece.y === pieceStart.y + moveDirection
+      );
+      if (pieceInWay) {
+        return false;
+      }
       return true;
     }
   }
@@ -35,6 +43,13 @@ export function isValidPawnMove(
     pieceEnd.y === pieceStart.y + moveDirection &&
     pieceEnd.x === pieceStart.x
   ) {
+    const pieceInWay = board.find(
+      (piece) =>
+        piece.x === pieceStart.x && piece.y === pieceStart.y + moveDirection
+    );
+    if (pieceInWay) {
+      return false;
+    }
     return true;
   }
 
@@ -63,13 +78,13 @@ export function canPawnCapture(
   ) {
     // if there is a piece at end position, check colors
     const capturedPiece = board.find(
-        (piece) => piece.x === pieceEnd.x && piece.y === pieceEnd.y
+      (piece) => piece.x === pieceEnd.x && piece.y === pieceEnd.y
     );
     if (!capturedPiece) {
       return false;
     }
     if (pawnColor === capturedPiece.color) {
-        return false;
+      return false;
     }
     return true;
   }
