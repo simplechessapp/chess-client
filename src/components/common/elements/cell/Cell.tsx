@@ -16,7 +16,7 @@ export default function Cell({ colorNumber, piece, color }: CellProps) {
   return (
     <div className={className}>
       <div
-        className={styles["piece"]}
+        className={piece ? styles["piece"] : ""}
         style={ (piece && color) ? { backgroundImage: `url(/pieces/${color}${piece}.svg)` } : {} }
       ></div>
     </div>
