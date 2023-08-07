@@ -52,7 +52,6 @@ export default function Chessboard() {
 
   function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
     if (grabbedPiece && chessBoardRef.current) {
-
       const chessBoard = chessBoardRef.current.getBoundingClientRect();
 
       const dropX = e.clientX - chessBoard.left;
@@ -63,21 +62,18 @@ export default function Chessboard() {
 
       const currentPiece = pieces.find(
         (piece) => piece.x === startPos.x && piece.y === startPos.y
-      )
-
-      console.log(currentPiece)
+      );
 
       if (
-        !isValidMove(pieces, startPos, { x: cellX, y: cellY }) || !currentPiece
+        !isValidMove(pieces, startPos, { x: cellX, y: cellY }) ||
+        !currentPiece
       ) {
         grabbedPiece.style.position = "static";
         setGrabbedPiece(null);
         return;
       }
-  
-      setPieces(
-        makeMove(pieces, startPos, { x: cellX, y: cellY })
-      );
+
+      setPieces(makeMove(pieces, startPos, { x: cellX, y: cellY }));
 
       grabbedPiece.style.position = "static";
       setGrabbedPiece(null);
