@@ -1,6 +1,6 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
-import { isValidBishopMove, isValidKnightMove, isValidPawnMove, isValidQueenMove, isValidRookMove } from "./";
+import { isValidBishopMove, isValidKingMove, isValidKnightMove, isValidPawnMove, isValidQueenMove, isValidRookMove } from "./";
 
 
 export function isValidMove(board: PiecePosition[], pieceStart: PieceCoordinates, pieceEnd: PieceCoordinates) {
@@ -24,6 +24,9 @@ export function isValidMove(board: PiecePosition[], pieceStart: PieceCoordinates
         }
         if (piece?.piece === PieceEnum.QUEEN) {
             return isValidQueenMove(board, pieceStart, pieceEnd);
+        }
+        if (piece?.piece === PieceEnum.KING) {
+            return isValidKingMove(board, pieceStart, pieceEnd);
         }
         return false;
 }
