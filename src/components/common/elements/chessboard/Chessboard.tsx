@@ -6,7 +6,7 @@ import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
 import { PiecePosition, PieceCoordinates } from "@/utils/types";
-import { Rules } from "@/rules/rules";
+import { isValidMove } from "@/rules";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -52,14 +52,18 @@ export default function Chessboard() {
 
   function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
     if (grabbedPiece && chessBoardRef.current) {
+      
       const chessBoard = chessBoardRef.current.getBoundingClientRect();
+
       const dropX = e.clientX - chessBoard.left;
       const dropY = e.clientY - chessBoard.top;
 
       const cellX = Math.floor(dropX / 100);
       const cellY = 7 - Math.floor(dropY / 100);
 
-      if (!Rules.prototype.isValidMove(pieces, startPos, { x: cellX, y: cellY })) {
+      if (
+        !isValidMove(pieces, startPos, { x: cellX, y: cellY })
+      ) {
         grabbedPiece.style.position = "static";
         setGrabbedPiece(null);
         return;
