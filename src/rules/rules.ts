@@ -5,6 +5,12 @@ import { isValidPawnMove } from "./";
 
 export function isValidMove(board: PiecePosition[], pieceStart: PieceCoordinates, pieceEnd: PieceCoordinates) {
         console.log("pieceStart", pieceStart);
+
+        // if out for bounds , return false
+        if (pieceEnd.x < 0 || pieceEnd.x > 7 || pieceEnd.y < 0 || pieceEnd.y > 7) {
+            return false;
+        }
+
         const piece = board.find(piece => piece.x === pieceStart.x && piece.y === pieceStart.y);
         if (piece?.piece === PieceEnum.PAWN) {
             return isValidPawnMove(board, pieceStart, pieceEnd);
