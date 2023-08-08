@@ -7,6 +7,8 @@ import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
 import { PiecePosition, PieceCoordinates } from "@/utils/types";
 import { isValidMove, makeMove } from "@/rules";
+import { getPiece } from "@/utils/common/boardFunctions";
+import { get } from "http";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -14,10 +16,12 @@ export default function Chessboard() {
   const [grabbedPiece, setGrabbedPiece] = React.useState<HTMLElement | null>(
     null
   );
+
   const [startPos, setStartPos] = React.useState<PieceCoordinates>({
     x: 0,
     y: 0,
   });
+
   const [pieces, setPieces] = React.useState<PiecePosition[]>(initialBoard);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
@@ -26,15 +30,25 @@ export default function Chessboard() {
       piece.classList.contains(pieceStyles["piece"]) &&
       chessBoardRef.current
     ) {
-      const x = e.clientX - 50;
-      const y = e.clientY - 50;
+      const [x, y] = [e.clientX - 50, e.clientY - 50];
+
       piece.style.position = "fixed";
       piece.style.left = `${x}px`;
       piece.style.top = `${y}px`;
 
+      const [relativeX, relativeY] = [
+        e.clientX - chessBoardRef.current.offsetLeft,
+        e.clientY - chessBoardRef.current.offsetTop,
+      ];
+
+      const [cellX, cellY] = [
+        Math.floor(relativeX / 100),
+        7 - Math.floor(relativeY / 100),
+      ];
+
       setStartPos({
-        x: Math.floor((e.clientX - chessBoardRef.current.offsetLeft) / 100),
-        y: 7 - Math.floor((e.clientY - chessBoardRef.current.offsetTop) / 100),
+        x: cellX,
+        y: cellY,
       });
 
       setGrabbedPiece(piece);
@@ -43,8 +57,8 @@ export default function Chessboard() {
 
   function movePiece(e: React.MouseEvent<HTMLDivElement>) {
     if (grabbedPiece !== null) {
-      const x = e.clientX - 50;
-      const y = e.clientY - 50;
+      const [x, y] = [e.clientX - 50, e.clientY - 50];
+
       grabbedPiece.style.left = `${x}px`;
       grabbedPiece.style.top = `${y}px`;
     }
@@ -52,31 +66,26 @@ export default function Chessboard() {
 
   function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
     if (grabbedPiece && chessBoardRef.current) {
-      const chessBoard = chessBoardRef.current.getBoundingClientRect();
+      const [x, y] = [
+        e.clientX - chessBoardRef.current.offsetLeft,
+        e.clientY - chessBoardRef.current.offsetTop,
+      ];
 
-      const dropX = e.clientX - chessBoard.left;
-      const dropY = e.clientY - chessBoard.top;
+      const [cellX, cellY] = [Math.floor(x / 100), 7 - Math.floor(y / 100)];
 
-      const cellX = Math.floor(dropX / 100);
-      const cellY = 7 - Math.floor(dropY / 100);
-
-      const currentPiece = pieces.find(
-        (piece) => piece.x === startPos.x && piece.y === startPos.y
-      );
-
-      if (
-        !isValidMove(pieces, startPos, { x: cellX, y: cellY }) ||
-        !currentPiece
-      ) {
-        grabbedPiece.style.position = "static";
-        setGrabbedPiece(null);
-        return;
-      }
-
-      setPieces(makeMove(pieces, startPos, { x: cellX, y: cellY }));
+      const currentPiece = getPiece(pieces, startPos);
 
       grabbedPiece.style.position = "static";
       setGrabbedPiece(null);
+
+      if (
+        !currentPiece ||
+        !isValidMove(pieces, currentPiece, { x: cellX, y: cellY })
+      ) {
+        return;
+      }
+
+      setPieces(makeMove(pieces, currentPiece, { x: cellX, y: cellY }));
     }
   }
 
@@ -85,12 +94,13 @@ export default function Chessboard() {
   for (let i = 7; i >= 0; i--) {
     for (let j = 0; j < 8; j++) {
       let cellNumber = i * 8 + j + 1;
+      const cellContent = getPiece(pieces, { x: j, y: i });
       board.push(
         <Cell
           key={cellNumber}
           colorNumber={i + j + 2}
-          piece={pieces.find((piece) => piece.x === j && piece.y === i)?.piece}
-          color={pieces.find((piece) => piece.x === j && piece.y === i)?.color}
+          piece={cellContent?.piece}
+          color={cellContent?.color}
         />
       );
     }
