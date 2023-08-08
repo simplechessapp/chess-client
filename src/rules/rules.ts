@@ -56,13 +56,11 @@ export function makeMove(
     piece.piece === PieceEnum.KING &&
     Math.abs(pieceEnd.x - pieceStart.x) === 2
   ) {
-    console.log("castling");
     return castle(piece, board, pieceStart, pieceEnd);
   }
 
-  const capturedPiece = board.find(
-    (piece) => piece.x === pieceEnd.x && piece.y === pieceEnd.y
-  );
+  const capturedPiece = getPiece(board, pieceEnd);
+  
   // if there is no piece at end position, move piece to end position
   if (!capturedPiece) {
     piece.x = pieceEnd.x;
