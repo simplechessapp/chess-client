@@ -1,30 +1,28 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
+import { getPiece, hasPiece } from "@/utils/common/boardFunctions";
 
 export function isValidKnightMove(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  knight: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  const knight = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
-
-  if (knight?.piece !== PieceEnum.KNIGHT) {
-    return false;
-  }
-
-  if (
-    (pieceEnd.x === pieceStart.x + 2 && pieceEnd.y === pieceStart.y + 1) ||
-    (pieceEnd.x === pieceStart.x + 2 && pieceEnd.y === pieceStart.y - 1) ||
-    (pieceEnd.x === pieceStart.x - 2 && pieceEnd.y === pieceStart.y + 1) ||
-    (pieceEnd.x === pieceStart.x - 2 && pieceEnd.y === pieceStart.y - 1) ||
-    (pieceEnd.x === pieceStart.x + 1 && pieceEnd.y === pieceStart.y + 2) ||
-    (pieceEnd.x === pieceStart.x + 1 && pieceEnd.y === pieceStart.y - 2) ||
-    (pieceEnd.x === pieceStart.x - 1 && pieceEnd.y === pieceStart.y + 2) ||
-    (pieceEnd.x === pieceStart.x - 1 && pieceEnd.y === pieceStart.y - 2)
-  ) {
-    return true;
+  for (let i = -1; i < 2; i += 2) {
+    for (let j = -1; j < 2; j += 2) {
+      if (
+        (pieceDrop.x === knight.x + 2 * i && pieceDrop.y === knight.y + j) || // 
+        (pieceDrop.x === knight.x + i && pieceDrop.y === knight.y + 2 * j)
+      ) {
+        const capturedPiece = getPiece(board, pieceDrop);
+        if (!capturedPiece) {
+          return true;
+        }
+        if (knight.color === capturedPiece.color) {
+          return false;
+        }
+        return true;
+      }
+    }
   }
 
   return false;

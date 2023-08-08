@@ -1,53 +1,26 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
+import { getPiece, hasPiece } from "@/utils/common/boardFunctions";
 
 export function isValidPawnMove(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  pawn: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  const pawn = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
+  const pawnSpecialMove = pawn.color === ColorEnum.WHITE ? 1 : 6;
+  const moveDirection = pawn.color === ColorEnum.WHITE ? 1 : -1;
 
-  if (pawn?.piece !== PieceEnum.PAWN) {
-    return false;
-  }
-
-  const pawnColor = pawn?.color;
-  const pawnSpecialMove = pawnColor === ColorEnum.WHITE ? 1 : 6;
-  const moveDirection = pawnColor === ColorEnum.WHITE ? 1 : -1;
-
-  if (canPawnCapture(board, pieceStart, pieceEnd)) {
+  if (canPawnCapture(board, pawn, pieceDrop)) {
     return true;
   }
 
-  if (pieceStart.y === pawnSpecialMove) {
-    if (
-      (pieceEnd.y === pieceStart.y + moveDirection ||
-        pieceEnd.y === pieceStart.y + moveDirection * 2) &&
-      pieceEnd.x === pieceStart.x
-    ) {
-      // if there is a piece in the way, return false
-      const pieceInWay = board.find(
-        (piece) =>
-          piece.x === pieceStart.x && piece.y === pieceStart.y + moveDirection
-      );
-      if (pieceInWay) {
-        return false;
-      }
-      return true;
-    }
-  }
   if (
-    pieceEnd.y === pieceStart.y + moveDirection &&
-    pieceEnd.x === pieceStart.x
+    (pieceDrop.y === pawn.y + moveDirection || // normal move
+      (pieceDrop.y === pawn.y + moveDirection * 2 && // special first move
+        pawn.y === pawnSpecialMove)) &&
+    pieceDrop.x === pawn.x
   ) {
-    const pieceInWay = board.find(
-      (piece) =>
-        piece.x === pieceStart.x && piece.y === pieceStart.y + moveDirection
-    );
-    if (pieceInWay) {
+    if (hasPiece(board, { x: pawn.x, y: pawn.y + moveDirection })) {
       return false;
     }
     return true;
@@ -58,28 +31,17 @@ export function isValidPawnMove(
 
 export function canPawnCapture(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  pawn: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  const pawn = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
-
-  if (pawn?.piece !== PieceEnum.PAWN) {
-    return false;
-  }
-
-  const pawnColor = pawn?.color;
-  const moveDirection = pawnColor === ColorEnum.WHITE ? 1 : -1;
+  const pawnColor = pawn.color;
+  const moveDirection = pawn.color === ColorEnum.WHITE ? 1 : -1;
 
   if (
-    pieceEnd.y === pieceStart.y + moveDirection &&
-    (pieceEnd.x === pieceStart.x + 1 || pieceEnd.x === pieceStart.x - 1)
+    pieceDrop.y === pawn.y + moveDirection &&
+    (pieceDrop.x === pawn.x + 1 || pieceDrop.x === pawn.x - 1)
   ) {
-    // if there is a piece at end position, check colors
-    const capturedPiece = board.find(
-      (piece) => piece.x === pieceEnd.x && piece.y === pieceEnd.y
-    );
+    const capturedPiece = getPiece(board, pieceDrop);
     if (!capturedPiece) {
       return false;
     }
