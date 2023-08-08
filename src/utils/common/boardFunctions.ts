@@ -10,6 +10,10 @@ export function getPiece(
     );
 }
 
+export function hasPiece(board: PiecePosition[], coordinates: PieceCoordinates) {
+    return !!getPiece(board, coordinates);
+}
+
 export function isOutOfBounds(coordinates: PieceCoordinates) {
     return coordinates.x < 0 || coordinates.x > 7 || coordinates.y < 0 || coordinates.y > 7;
 }
