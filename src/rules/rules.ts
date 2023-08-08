@@ -8,6 +8,7 @@ import {
   isValidQueenMove,
   isValidRookMove,
 } from "./";
+import { areSameColor, getPiece, isOutOfBounds } from "@/utils/common/boardFunctions";
 
 export function isValidMove(
   board: PiecePosition[],
@@ -15,13 +16,10 @@ export function isValidMove(
   pieceEnd: PieceCoordinates
 ) {
   // if out for bounds , return false
-  if (pieceEnd.x < 0 || pieceEnd.x > 7 || pieceEnd.y < 0 || pieceEnd.y > 7) {
-    return false;
-  }
+  if (isOutOfBounds(pieceEnd)) return false;
 
-  const piece = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
+  const piece = getPiece(board, pieceStart);
+
   if (piece?.piece === PieceEnum.PAWN) {
     return isValidPawnMove(board, pieceStart, pieceEnd);
   }
@@ -73,7 +71,7 @@ export function makeMove(
   }
 
   // if there is a piece at end position, check colors
-  if (piece.color === capturedPiece.color) {
+  if (areSameColor(piece, capturedPiece)) {
     return [...board];
   }
 
