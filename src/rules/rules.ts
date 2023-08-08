@@ -12,31 +12,29 @@ import { areSameColor, getPiece, isOutOfBounds } from "@/utils/common/boardFunct
 
 export function isValidMove(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  piece: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  // if out for bounds , return false
-  if (isOutOfBounds(pieceEnd)) return false;
 
-  const piece = getPiece(board, pieceStart);
+  if (isOutOfBounds(pieceDrop)) return false;
 
   if (piece?.piece === PieceEnum.PAWN) {
-    return isValidPawnMove(board, pieceStart, pieceEnd);
+    return isValidPawnMove(board, piece, pieceDrop);
   }
   if (piece?.piece === PieceEnum.KNIGHT) {
-    return isValidKnightMove(board, pieceStart, pieceEnd);
+    return isValidKnightMove(board, piece, pieceDrop);
   }
   if (piece?.piece === PieceEnum.BISHOP) {
-    return isValidBishopMove(board, pieceStart, pieceEnd);
+    return isValidBishopMove(board, piece, pieceDrop);
   }
   if (piece?.piece === PieceEnum.ROOK) {
-    return isValidRookMove(board, pieceStart, pieceEnd);
+    return isValidRookMove(board, piece, pieceDrop);
   }
   if (piece?.piece === PieceEnum.QUEEN) {
-    return isValidQueenMove(board, pieceStart, pieceEnd);
+    return isValidQueenMove(board, piece, pieceDrop);
   }
   if (piece?.piece === PieceEnum.KING) {
-    return isValidKingMove(board, pieceStart, pieceEnd);
+    return isValidKingMove(board, piece, pieceDrop);
   }
   return false;
 }
