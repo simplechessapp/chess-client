@@ -8,7 +8,6 @@ import { initialBoard } from "@/utils/constants";
 import { PiecePosition, PieceCoordinates } from "@/utils/types";
 import { isValidMove, makeMove } from "@/rules";
 import { getPiece } from "@/utils/common/boardFunctions";
-import { get } from "http";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
