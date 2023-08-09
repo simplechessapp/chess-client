@@ -18,7 +18,14 @@ export function isValidKingMove(
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
       if (pieceDrop.x === king.x + i && pieceDrop.y === king.y + j) {
-        return true;
+        // eat piece
+        const capturedPiece = getPiece(board, pieceDrop);
+        if (!capturedPiece) {
+          return true;
+        }
+        if (!areSameColor(king, capturedPiece)) {
+          return true;
+        }
       }
     }
   }

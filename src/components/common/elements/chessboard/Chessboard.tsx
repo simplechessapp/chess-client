@@ -6,7 +6,7 @@ import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
 import { PiecePosition, PieceCoordinates } from "@/utils/types";
-import { getAllPawnMoves, isValidMove, makeMove } from "@/rules";
+import { getAllPawnMoves, getValidMoves, isValidMove, makeMove } from "@/rules";
 import { getPiece } from "@/utils/common/boardFunctions";
 
 export default function Chessboard() {
@@ -50,7 +50,7 @@ export default function Chessboard() {
       });
 
       const pieceInCell = getPiece(pieces, { x: cellX, y: cellY });
-      setValidMoves(getAllPawnMoves(pieces, pieceInCell!));
+      setValidMoves(getValidMoves(pieces, pieceInCell!));
 
       setGrabbedPiece(piece);
     }
