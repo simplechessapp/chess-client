@@ -1,36 +1,27 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
+import { hasPiece } from "@/utils/common/boardFunctions";
 
 export function isValidBishopMove(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  bishop: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  const bishop = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
-
-  if (bishop?.piece !== PieceEnum.BISHOP) {
-    return false;
-  }
-
-  if (pieceEnd.x === pieceStart.x && pieceEnd.y === pieceStart.y) {
+  if (pieceDrop.x === bishop.x && pieceDrop.y === bishop.y) {
     return false;
   }
 
   if (
-    pieceEnd.x - pieceStart.x === pieceEnd.y - pieceStart.y ||
-    pieceEnd.x - pieceStart.x === pieceStart.y - pieceEnd.y
+    pieceDrop.x - bishop.x === pieceDrop.y - bishop.y ||
+    pieceDrop.x - bishop.x === bishop.y - pieceDrop.y
   ) {
     // cant move through pieces
 
-    for (let i = 1; i < Math.abs(pieceEnd.x - pieceStart.x); i++) {
-      const x = pieceStart.x + i * Math.sign(pieceEnd.x - pieceStart.x);
-      const y = pieceStart.y + i * Math.sign(pieceEnd.y - pieceStart.y);
+    for (let i = 1; i < Math.abs(pieceDrop.x - bishop.x); i++) {
+      const x = bishop.x + i * Math.sign(pieceDrop.x - bishop.x);
+      const y = bishop.y + i * Math.sign(pieceDrop.y - bishop.y);
 
-      const piece = board.find((piece) => piece.x === x && piece.y === y);
-
-      if (piece) {
+      if (hasPiece(board, { x, y })) {
         return false;
       }
     }

@@ -1,30 +1,19 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
+import { hasPiece } from "@/utils/common/boardFunctions";
 
 export function isValidRookMove(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  rook: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  const rook = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
-
-  if (rook?.piece !== PieceEnum.ROOK) {
-    return false;
-  }
-
   // move on y axis
-  if (pieceEnd.x === pieceStart.x && pieceEnd.y !== pieceStart.y) {
+  if (pieceDrop.x === rook.x && pieceDrop.y !== rook.y) {
     // cant move through pieces
-    for (let i = 1; i < Math.abs(pieceEnd.y - pieceStart.y); i++) {
-      const y = pieceStart.y + i * Math.sign(pieceEnd.y - pieceStart.y);
+    for (let i = 1; i < Math.abs(pieceDrop.y - rook.y); i++) {
+      const y = rook.y + i * Math.sign(pieceDrop.y - rook.y);
 
-      const piece = board.find(
-        (piece) => piece.x === pieceStart.x && piece.y === y
-      );
-
-      if (piece) {
+      if (hasPiece(board, { x: rook.x, y })) {
         return false;
       }
     }
@@ -32,16 +21,12 @@ export function isValidRookMove(
   }
 
   // move on x axis
-  if (pieceEnd.x !== pieceStart.x && pieceEnd.y === pieceStart.y) {
+  if (pieceDrop.x !== rook.x && pieceDrop.y === rook.y) {
     // cant move through pieces
-    for (let i = 1; i < Math.abs(pieceEnd.x - pieceStart.x); i++) {
-      const x = pieceStart.x + i * Math.sign(pieceEnd.x - pieceStart.x);
+    for (let i = 1; i < Math.abs(pieceDrop.x - rook.x); i++) {
+      const x = rook.x + i * Math.sign(pieceDrop.x - rook.x);
 
-      const piece = board.find(
-        (piece) => piece.x === x && piece.y === pieceStart.y
-      );
-
-      if (piece) {
+      if (hasPiece(board, { x, y: rook.y })) {
         return false;
       }
     }
