@@ -6,7 +6,7 @@ import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
 import { PiecePosition, PieceCoordinates } from "@/utils/types";
-import { isValidMove, makeMove } from "@/rules";
+import { getAllPawnMoves, isValidMove, makeMove } from "@/rules";
 import { getPiece } from "@/utils/common/boardFunctions";
 
 export default function Chessboard() {
@@ -16,12 +16,11 @@ export default function Chessboard() {
     null
   );
 
-  const [startPos, setStartPos] = React.useState<PieceCoordinates>({
-    x: 0,
-    y: 0,
-  });
+  const [startPos, setStartPos] = React.useState<PieceCoordinates | null>(null);
 
   const [pieces, setPieces] = React.useState<PiecePosition[]>(initialBoard);
+
+  const [validMoves, setValidMoves] = React.useState<PieceCoordinates[]>([]);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
@@ -50,6 +49,9 @@ export default function Chessboard() {
         y: cellY,
       });
 
+      const pieceInCell = getPiece(pieces, { x: cellX, y: cellY });
+      setValidMoves(getAllPawnMoves(pieces, pieceInCell!));
+
       setGrabbedPiece(piece);
     }
   }
@@ -72,7 +74,7 @@ export default function Chessboard() {
 
       const [cellX, cellY] = [Math.floor(x / 100), 7 - Math.floor(y / 100)];
 
-      const currentPiece = getPiece(pieces, startPos);
+      const currentPiece = getPiece(pieces, startPos!);
 
       grabbedPiece.style.position = "static";
       setGrabbedPiece(null);
@@ -85,6 +87,8 @@ export default function Chessboard() {
       }
 
       setPieces(makeMove(pieces, currentPiece, { x: cellX, y: cellY }));
+      setValidMoves([]);
+      setStartPos(null);
     }
   }
 
@@ -100,6 +104,10 @@ export default function Chessboard() {
           colorNumber={i + j + 2}
           piece={cellContent?.piece}
           color={cellContent?.color}
+          validMove={validMoves.some(
+            (move) => move.x === j && move.y === i
+          )}
+          highlight={startPos?.x === j && startPos.y === i}
         />
       );
     }
