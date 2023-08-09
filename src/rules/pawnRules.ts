@@ -10,6 +10,7 @@ export function isValidPawnMove(
   const pawnSpecialMove = pawn.color === ColorEnum.WHITE ? 1 : 6;
   const moveDirection = pawn.color === ColorEnum.WHITE ? 1 : -1;
 
+
   if (canPawnCapture(board, pawn, pieceDrop)) {
     return true;
   }
@@ -23,6 +24,7 @@ export function isValidPawnMove(
     if (hasPiece(board, { x: pawn.x, y: pawn.y + moveDirection })) {
       return false;
     }
+
     return true;
   }
 
@@ -52,4 +54,20 @@ export function canPawnCapture(
   }
 
   return false;
+}
+
+export function getAllPawnMoves(board: PiecePosition[], pawn: PiecePosition) {
+  const validMoves: PieceCoordinates[] = [];
+  
+  for (let i = 1; i <= 2; i++) {
+    for (let j = -1; j <= 1; j++) {
+      const moveDirection = pawn.color === ColorEnum.WHITE ? 1 : -1;
+      const move = { x: pawn.x + j, y: pawn.y + moveDirection * i };
+      if (isValidPawnMove(board, pawn, move)) {
+        validMoves.push(move);
+      }
+    }
+  }
+
+  return validMoves;
 }
