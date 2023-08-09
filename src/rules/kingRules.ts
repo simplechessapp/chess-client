@@ -62,7 +62,7 @@ export function isValidKingCastle(
       return false;
     }
   }
-  if (pieceDrop.x === king.x + 2 || pieceDrop.x === king.x - 2) {
+  if ((pieceDrop.x === king.x + 2 || pieceDrop.x === king.x - 2) && pieceDrop.y === king.y) {
     return true;
   }
 
