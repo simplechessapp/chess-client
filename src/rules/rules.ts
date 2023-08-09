@@ -1,6 +1,7 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
 import {
+  getAllPawnMoves,
   isValidBishopMove,
   isValidKingMove,
   isValidKnightMove,
@@ -9,7 +10,6 @@ import {
   isValidRookMove,
 } from "./";
 import { areSameColor, getPiece, isOutOfBounds } from "@/utils/common/boardFunctions";
-import { get } from "http";
 
 export function isValidMove(
   board: PiecePosition[],
@@ -18,6 +18,11 @@ export function isValidMove(
 ) {
 
   if (isOutOfBounds(pieceDrop)) return false;
+
+  // if dropped in same spot
+  if (pieceDrop.x === piece.x && pieceDrop.y === piece.y) {
+    return false;
+  }
 
   if (piece?.piece === PieceEnum.PAWN) {
     return isValidPawnMove(board, piece, pieceDrop);
@@ -101,3 +106,5 @@ export function castle(
 
   return [...board];
 }
+
+
