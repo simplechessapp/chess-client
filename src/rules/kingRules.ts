@@ -1,34 +1,26 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
+import {
+  areSameColor,
+  getPiece,
+  hasPiece,
+} from "@/utils/common/boardFunctions";
 
 export function isValidKingMove(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  king: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-  const king = board.find(
-    (piece) => piece.x === pieceStart.x && piece.y === pieceStart.y
-  );
-
-  if (king?.piece !== PieceEnum.KING) {
-    return false;
-  }
-
-  if (isValidKingCastle(board, pieceStart, pieceEnd, king)) {
+  if (isValidKingCastle(board, king, pieceDrop)) {
     return true;
   }
 
-  if (
-    (pieceEnd.x === pieceStart.x + 1 && pieceEnd.y === pieceStart.y) ||
-    (pieceEnd.x === pieceStart.x - 1 && pieceEnd.y === pieceStart.y) ||
-    (pieceEnd.x === pieceStart.x && pieceEnd.y === pieceStart.y + 1) ||
-    (pieceEnd.x === pieceStart.x && pieceEnd.y === pieceStart.y - 1) ||
-    (pieceEnd.x === pieceStart.x + 1 && pieceEnd.y === pieceStart.y + 1) ||
-    (pieceEnd.x === pieceStart.x + 1 && pieceEnd.y === pieceStart.y - 1) ||
-    (pieceEnd.x === pieceStart.x - 1 && pieceEnd.y === pieceStart.y + 1) ||
-    (pieceEnd.x === pieceStart.x - 1 && pieceEnd.y === pieceStart.y - 1)
-  ) {
-    return true;
+  for (let i = -1; i < 2; i++) {
+    for (let j = -1; j < 2; j++) {
+      if (pieceDrop.x === king.x + i && pieceDrop.y === king.y + j) {
+        return true;
+      }
+    }
   }
 
   return false;
@@ -36,42 +28,34 @@ export function isValidKingMove(
 
 export function isValidKingCastle(
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates,
-  king: PiecePosition
+  king: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
-
   // check king start position
-  const kingStart = king.color === ColorEnum.WHITE ? { x: 4, y: 0 } : { x: 4, y: 7 };
-  if (pieceStart.x !== kingStart.x || pieceStart.y !== kingStart.y) {
+  const kingStart =
+    king.color === ColorEnum.WHITE ? { x: 4, y: 0 } : { x: 4, y: 7 };
+  if (king.x !== kingStart.x || king.y !== kingStart.y) {
     return false;
   }
 
   // check if rooks are in place
-  const rookX = pieceEnd.x > pieceStart.x ? 7 : 0;
-  
-  const rook = board.find(
-    (piece) => piece.x === rookX && piece.y === pieceStart.y
-  );
+  const rookX = pieceDrop.x > king.x ? 7 : 0;
 
-  if (rook?.piece !== PieceEnum.ROOK || rook?.color !== king.color) {
+  const rook = getPiece(board, { x: rookX, y: king.y });
+
+  if (rook?.piece !== PieceEnum.ROOK || !areSameColor(king, rook)) {
     return false;
   }
 
-  const castlingDirection = pieceEnd.x > pieceStart.x ? 1 : -1;
+  const castlingDirection = pieceDrop.x > king.x ? 1 : -1;
   // check if there is nothing between king and rook
 
   for (let i = 1; i < Math.abs(king.x - rook.x); i++) {
-    const piece = board.find(
-      (piece) => piece.x === pieceStart.x + i * castlingDirection && piece.y === pieceStart.y
-    );
-    if (piece) {
+    if (hasPiece(board, { x: king.x + i * castlingDirection, y: king.y })) {
       return false;
     }
   }
-
-
-  if (pieceEnd.x === pieceStart.x + 2 || pieceEnd.x === pieceStart.x - 2) {
+  if (pieceDrop.x === king.x + 2 || pieceDrop.x === king.x - 2) {
     return true;
   }
 

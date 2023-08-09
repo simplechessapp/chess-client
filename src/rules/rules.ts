@@ -1,6 +1,7 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
 import {
+  getAllPawnMoves,
   isValidBishopMove,
   isValidKingMove,
   isValidKnightMove,
@@ -17,6 +18,11 @@ export function isValidMove(
 ) {
 
   if (isOutOfBounds(pieceDrop)) return false;
+
+  // if dropped in same spot
+  if (pieceDrop.x === piece.x && pieceDrop.y === piece.y) {
+    return false;
+  }
 
   if (piece?.piece === PieceEnum.PAWN) {
     return isValidPawnMove(board, piece, pieceDrop);
@@ -54,7 +60,7 @@ export function makeMove(
     piece.piece === PieceEnum.KING &&
     Math.abs(pieceEnd.x - pieceStart.x) === 2
   ) {
-    return castle(piece, board, pieceStart, pieceEnd);
+    return castle(board, piece, pieceEnd);
   }
 
   const capturedPiece = getPiece(board, pieceEnd);
@@ -82,24 +88,23 @@ export function makeMove(
 }
 
 export function castle(
-  king: PiecePosition,
   board: PiecePosition[],
-  pieceStart: PieceCoordinates,
-  pieceEnd: PieceCoordinates
+  king: PiecePosition,
+  pieceDrop: PieceCoordinates
 ) {
   const rookPosition =
-    pieceEnd.x > pieceStart.x
-      ? { x: 7, y: pieceStart.y }
-      : { x: 0, y: pieceStart.y };
+    pieceDrop.x > king.x
+      ? { x: 7, y: king.y }
+      : { x: 0, y: king.y };
 
-  const rook = board.find(
-    (piece) => piece.x === rookPosition.x && piece.y === rookPosition.y
-  );
+  const rook = getPiece(board, rookPosition);
 
   if (!rook) return [...board];
 
-  rook.x = pieceEnd.x > pieceStart.x ? 5 : 3;
-  king.x = pieceEnd.x > pieceStart.x ? 6 : 2;
+  rook.x = pieceDrop.x > king.x ? 5 : 3;
+  king.x = pieceDrop.x > king.x ? 6 : 2;
 
   return [...board];
 }
+
+
