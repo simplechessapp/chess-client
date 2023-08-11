@@ -57,4 +57,9 @@ export class Piece {
   get isBlack(): boolean {
     return this.color === ColorEnum.BLACK;
   }
+
+  public sameCoordinates(coordinates: Coordinates): boolean {
+    return this.coordinates.sameCoordinates(coordinates);
+  }
+
 }

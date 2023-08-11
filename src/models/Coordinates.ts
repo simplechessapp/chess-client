@@ -11,4 +11,8 @@ export class Coordinates {
     public sameCoordinates(coordinates: Coordinates): boolean {
         return this.x === coordinates.x && this.y === coordinates.y;
     }
+
+    get isOutOfBounds(): boolean {
+        return this.x < 0 || this.x > 7 || this.y < 0 || this.y > 7;
+    }
 }
