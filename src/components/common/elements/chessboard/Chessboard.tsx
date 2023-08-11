@@ -6,8 +6,9 @@ import pieceStyles from "../cell/Cell.module.scss";
 import Cell from "../cell/Cell";
 import { initialBoard } from "@/utils/constants";
 import { PiecePosition, PieceCoordinates } from "@/utils/types";
-import { getAllPawnMoves, isValidMove, makeMove } from "@/rules";
+import { getAllPawnMoves, getValidMoves, isValidMove, makeMove } from "@/rules";
 import { getPiece } from "@/utils/common/boardFunctions";
+import { ColorEnum, PieceEnum } from "@/utils/enums";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -22,6 +23,8 @@ export default function Chessboard() {
 
   const [validMoves, setValidMoves] = React.useState<PieceCoordinates[]>([]);
 
+  const [turn, setTurn] = React.useState<ColorEnum>(ColorEnum.WHITE);
+
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
     if (
@@ -30,10 +33,7 @@ export default function Chessboard() {
     ) {
       const [x, y] = [e.clientX - 50, e.clientY - 50];
 
-      piece.style.position = "fixed";
-      piece.style.left = `${x}px`;
-      piece.style.top = `${y}px`;
-
+      
       const [relativeX, relativeY] = [
         e.clientX - chessBoardRef.current.offsetLeft,
         e.clientY - chessBoardRef.current.offsetTop,
@@ -44,13 +44,21 @@ export default function Chessboard() {
         7 - Math.floor(relativeY / 100),
       ];
 
+      if (getPiece(pieces, { x: cellX, y: cellY })?.color !== turn) {
+        return;
+      }
+
+      piece.style.position = "fixed";
+      piece.style.left = `${x}px`;
+      piece.style.top = `${y}px`;
+
       setStartPos({
         x: cellX,
         y: cellY,
       });
 
       const pieceInCell = getPiece(pieces, { x: cellX, y: cellY });
-      setValidMoves(getAllPawnMoves(pieces, pieceInCell!));
+      setValidMoves(getValidMoves(pieces, pieceInCell!));
 
       setGrabbedPiece(piece);
     }
@@ -89,6 +97,7 @@ export default function Chessboard() {
       setPieces(makeMove(pieces, currentPiece, { x: cellX, y: cellY }));
       setValidMoves([]);
       setStartPos(null);
+      setTurn(turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE);
     }
   }
 

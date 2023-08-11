@@ -1,5 +1,8 @@
+import { Board } from "@/models/Board";
 import { ColorEnum, PieceEnum } from "../enums";
 import { PiecePosition } from "../types/PiecePosition.type";
+import { Piece } from "@/models/Piece";
+import { Coordinates } from "@/models/Coordinates";
 
 export const initialBoard : PiecePosition[] = [
     { piece: PieceEnum.ROOK, color: ColorEnum.WHITE, x: 0, y: 0 },
@@ -35,6 +38,43 @@ export const initialBoard : PiecePosition[] = [
     { piece: PieceEnum.KNIGHT, color: ColorEnum.BLACK, x: 6, y: 7 },
     { piece: PieceEnum.ROOK, color: ColorEnum.BLACK, x: 7, y: 7 },
 ];
+
+export const initialBoard2: Board = new Board(
+    [
+        new Piece(new Coordinates(0, 0), ColorEnum.WHITE, PieceEnum.ROOK),
+        new Piece(new Coordinates(1, 0), ColorEnum.WHITE, PieceEnum.KNIGHT),
+        new Piece(new Coordinates(2, 0), ColorEnum.WHITE, PieceEnum.BISHOP),
+        new Piece(new Coordinates(3, 0), ColorEnum.WHITE, PieceEnum.QUEEN),
+        new Piece(new Coordinates(4, 0), ColorEnum.WHITE, PieceEnum.KING),
+        new Piece(new Coordinates(5, 0), ColorEnum.WHITE, PieceEnum.BISHOP),
+        new Piece(new Coordinates(6, 0), ColorEnum.WHITE, PieceEnum.KNIGHT),
+        new Piece(new Coordinates(7, 0), ColorEnum.WHITE, PieceEnum.ROOK),
+        new Piece(new Coordinates(0, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(1, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(2, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(3, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(4, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(5, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(6, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(7, 1), ColorEnum.WHITE, PieceEnum.PAWN),
+        new Piece(new Coordinates(0, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(1, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(2, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(3, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(4, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(5, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(6, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(7, 6), ColorEnum.BLACK, PieceEnum.PAWN),
+        new Piece(new Coordinates(0, 7), ColorEnum.BLACK, PieceEnum.ROOK),
+        new Piece(new Coordinates(1, 7), ColorEnum.BLACK, PieceEnum.KNIGHT),
+        new Piece(new Coordinates(2, 7), ColorEnum.BLACK, PieceEnum.BISHOP),
+        new Piece(new Coordinates(3, 7), ColorEnum.BLACK, PieceEnum.QUEEN),
+        new Piece(new Coordinates(4, 7), ColorEnum.BLACK, PieceEnum.KING),
+        new Piece(new Coordinates(5, 7), ColorEnum.BLACK, PieceEnum.BISHOP),
+        new Piece(new Coordinates(6, 7), ColorEnum.BLACK, PieceEnum.KNIGHT),
+        new Piece(new Coordinates(7, 7), ColorEnum.BLACK, PieceEnum.ROOK),
+    ]
+)
 
 export const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];

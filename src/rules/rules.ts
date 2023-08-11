@@ -107,4 +107,23 @@ export function castle(
   return [...board];
 }
 
+export function getValidMoves(board: PiecePosition[], piece: PiecePosition) {
+  const validMoves: PieceCoordinates[] = [];
 
+  if (piece.piece === PieceEnum.PAWN) {
+    return getAllPawnMoves(board, piece);
+  }
+
+  for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 8; y++) {
+
+      const pieceDrop = { x, y };
+
+      if (isValidMove(board, piece, pieceDrop)) {
+        validMoves.push(pieceDrop);
+      }
+    }
+  }
+
+  return validMoves;
+}

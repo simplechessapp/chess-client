@@ -1,6 +1,6 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
-import { hasPiece } from "@/utils/common/boardFunctions";
+import { areSameColor, getPiece, hasPiece } from "@/utils/common/boardFunctions";
 
 export function isValidBishopMove(
   board: PiecePosition[],
@@ -25,8 +25,15 @@ export function isValidBishopMove(
         return false;
       }
     }
+    // eat piece
+    const capturedPiece = getPiece(board, pieceDrop);
+    if (!capturedPiece) {
+      return true;
+    }
+    if (!areSameColor(bishop, capturedPiece)) {
+      return true;
+    }
 
-    return true;
   }
 
   return false;

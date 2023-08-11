@@ -1,6 +1,6 @@
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { PiecePosition, PieceCoordinates } from "../utils/types";
-import { hasPiece } from "@/utils/common/boardFunctions";
+import { areSameColor, getPiece, hasPiece } from "@/utils/common/boardFunctions";
 
 export function isValidRookMove(
   board: PiecePosition[],
@@ -17,7 +17,14 @@ export function isValidRookMove(
         return false;
       }
     }
-    return true;
+    // eat piece
+    const capturedPiece = getPiece(board, pieceDrop);
+    if (!capturedPiece) {
+      return true;
+    }
+    if (!areSameColor(rook, capturedPiece)) {
+      return true;
+    }
   }
 
   // move on x axis
@@ -30,7 +37,15 @@ export function isValidRookMove(
         return false;
       }
     }
-    return true;
+     // eat piece
+     const capturedPiece = getPiece(board, pieceDrop);
+     if (!capturedPiece) {
+       return true;
+     }
+     if (!areSameColor(rook, capturedPiece)) {
+       return true;
+     }
+ 
   }
 
   return false;
