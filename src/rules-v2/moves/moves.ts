@@ -7,7 +7,7 @@ import { getAllRookMoves } from "../rookRules";
 import { getAllKnightMoves } from "../knightRules";
 import { getAllBishopMoves } from "../bishopRules";
 import { getAllQueenMoves } from "../queenRules";
-import { getAllKingMoves } from "../kingRules";
+import { getAllKingMoves, getCastlingMoves } from "../kingRules";
 
 export function makeMove(
   board: Board,
@@ -23,6 +23,33 @@ export function makeMove(
   const toPiece = getPiece(board.pieces, to);
 
   const validMoves = getValidMoves(board, from);
+
+  if (fromPiece.piece === PieceEnum.KING) {
+    const validCastlingMoves = getCastlingMoves(board.pieces, fromPiece);
+
+    if (validCastlingMoves.some((m) => m.x === to.x && m.y === to.y)) {
+      const rookPosition = to.x > fromPiece.coordinates.x ? 7 : 0;
+
+      const rook = board.pieces.find(
+        (p) => p.piece === PieceEnum.ROOK && p.coordinates.x === rookPosition
+      );
+
+      console.log(rook);
+
+      if (!rook) {
+        return false;
+      }
+
+      const rookMove = {
+        x: to.x > fromPiece.coordinates.x ? to.x - 1 : to.x + 1,
+        y: to.y,
+      };
+
+      fromPiece.coordinates = to;
+      rook.coordinates = rookMove;
+      return true;
+    }
+  }
 
   if (!validMoves.some((m) => m.x === to.x && m.y === to.y)) {
     return false;
