@@ -1,36 +1,30 @@
-import { ColorEnum, PieceEnum } from "@/utils/enums";
+import { Coordinates } from "@/models/Coordinates";
 import styles from "./Cell.module.scss";
 
 interface CellProps {
-  colorNumber: number;
-  piece?: PieceEnum;
-  color?: ColorEnum;
-  validMove?: boolean;
-  highlight?: boolean;
+    highlight?: boolean;
+    check?: boolean;
+    validMove?: boolean;
+    validCapture?: boolean;
+    coordinates: Coordinates;
 }
 
-export default function Cell({ colorNumber, piece, color, validMove, highlight }: CellProps) {
-  const className: string = [
-    styles["cell"],
-    colorNumber % 2 === 0 ? styles["white"] : styles["black"],
-    highlight ? styles["highlight"] : "",
-  ].join(" ");
+export default function Cell(props: CellProps) {
 
-  const pieceClassName: string = [
-    styles["piece"],
-    validMove ? styles["valid-capture"] : "",
-  ].join(" ");
+    const className = [
+        styles["cell"],
+        props.highlight ? styles["highlight"] : "",
+        props.check ? styles["check"] : "",
+        props.validMove ? styles["valid-move"] : "",
+        props.validCapture ? styles["valid-capture"] : "",
+    ].join(" ");
 
-  const emptyClassName: string = [
-    validMove ? styles["valid-move"] : "",
-  ].join(" ");
+    const style = {
+        transform: `translate(${props.coordinates.x * 100}%, ${(7 - props.coordinates.y) * 100}%)`,
+    };
 
-  return (
-    <div className={className}>
-      <div
-        className={piece ? pieceClassName : emptyClassName}
-        style={ (piece && color) ? { backgroundImage: `url(/pieces/${color}${piece}.svg)` } : {} }
-      ></div>
-    </div>
-  );
+    return (
+        <div className={className} style={style}></div>  
+    );
 }
+
