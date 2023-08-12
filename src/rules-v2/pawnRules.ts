@@ -42,11 +42,11 @@ export function getAllPawnMoves(pieces: Piece[], pawn: Piece) {
   const captureRightPiece = getPiece(pieces, captureRight);
   const captureLeftPiece = getPiece(pieces, captureLeft);
 
-  if (captureRightPiece && areSameColor(pawn, captureRightPiece)) {
+  if (captureRightPiece && !areSameColor(pawn, captureRightPiece)) {
     validMoves.push(captureRight);
   }
 
-  if (captureLeftPiece && areSameColor(pawn, captureLeftPiece)) {
+  if (captureLeftPiece && !areSameColor(pawn, captureLeftPiece)) {
     validMoves.push(captureLeft);
   }
 
