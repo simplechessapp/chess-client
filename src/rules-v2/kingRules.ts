@@ -4,7 +4,7 @@ import { getPiece } from "./checks/cellChecks";
 import { PieceEnum } from "@/utils/enums";
 import { areSameColor } from "./checks/pieceChecks";
 
-export function getAllKingRules(pieces: Piece[], king: Piece) {
+export function getAllKingMoves(pieces: Piece[], king: Piece) {
   const validMoves: Coordinates[] = [];
 
   for (let x = king.coordinates.x - 1; x <= king.coordinates.x + 1; x++) {
@@ -22,6 +22,8 @@ export function getAllKingRules(pieces: Piece[], king: Piece) {
       validMoves.push(move);
     }
   }
+
+  return validMoves;
 }
 
 export function getCastlingMoves(pieces: Piece[], king: Piece) {
