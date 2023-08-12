@@ -1,6 +1,7 @@
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
-import { getPiece } from "./cellChecks";
+import { getPiece, isOutOfBounds } from "./cellChecks";
+import { areSameColor } from "./pieceChecks";
 
 export function getAllRookMoves(pieces: Piece[], rook: Piece) {
     const validMoves: Coordinates[] = [];
@@ -13,26 +14,26 @@ export function getAllRookMoves(pieces: Piece[], rook: Piece) {
     ];
 
     for (const direction of directions) {
-        let move: Coordinates = new Coordinates(
-            rook.coordinates.x + direction.x,
-            rook.coordinates.y + direction.y
-        );
+        let move: Coordinates = {
+            x: rook.coordinates.x + direction.x,
+            y: rook.coordinates.y + direction.y
+        }
 
-        while (!move.isOutOfBounds) {
+        while (!isOutOfBounds(move)) {
             const piece = getPiece(pieces, move);
 
             if (piece) {
-                if (piece.areSameColor(rook)) break;
+                if (areSameColor(rook, piece)) break;
 
                 validMoves.push(move);
                 break;
             }
 
             validMoves.push(move);
-            move = new Coordinates(
-                move.x + direction.x,
-                move.y + direction.y
-            );
+            move = {
+                x: move.x + direction.x,
+                y: move.y + direction.y
+            }
         }
     }
 

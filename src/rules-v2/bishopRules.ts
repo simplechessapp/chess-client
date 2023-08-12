@@ -1,40 +1,41 @@
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
-import { getPiece } from "./cellChecks";
+import { getPiece, isOutOfBounds } from "./cellChecks";
+import { areSameColor } from "./pieceChecks";
 
 export function getAllBishopMoves(pieces: Piece[], bishop: Piece) {
-    const validMoves: Coordinates[] = [];
+  const validMoves: Coordinates[] = [];
 
-    const directions = [
-        { x: 1, y: 1 },
-        { x: -1, y: 1 },
-        { x: -1, y: -1 },
-        { x: 1, y: -1 },
-    ];
+  const directions = [
+    { x: 1, y: 1 },
+    { x: -1, y: 1 },
+    { x: -1, y: -1 },
+    { x: 1, y: -1 },
+  ];
 
-    for (const direction of directions) {
-        let move: Coordinates = new Coordinates(
-            bishop.coordinates.x + direction.x,
-            bishop.coordinates.y + direction.y
-        );
+  for (const direction of directions) {
+    let move: Coordinates = {
+      x: bishop.coordinates.x + direction.x,
+      y: bishop.coordinates.y + direction.y,
+    };
 
-        while (!move.isOutOfBounds) {
-            const piece = getPiece(pieces, move);
+    while (!isOutOfBounds(move)) {
+      const piece = getPiece(pieces, move);
 
-            if (piece) {
-                if (piece.areSameColor(bishop)) break;
+      if (piece) {
+        if (areSameColor(bishop, piece)) break;
 
-                validMoves.push(move);
-                break;
-            }
+        validMoves.push(move);
+        break;
+      }
 
-            validMoves.push(move);
-            move = new Coordinates(
-                move.x + direction.x,
-                move.y + direction.y
-            );
-        }
+      validMoves.push(move);
+      move = {
+        x: move.x + direction.x,
+        y: move.y + direction.y,
+      };
     }
+  }
 
-    return validMoves;
-} 
+  return validMoves;
+}
