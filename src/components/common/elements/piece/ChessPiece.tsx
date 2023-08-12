@@ -8,15 +8,14 @@ interface ChessPieceProps {
 }
 
 export default function ChessPiece(props: ChessPieceProps) {
-  const className = `
-    ${styles[props.piece.color]} 
-    ${styles[props.piece.piece]}
-    ${styles["piece"]}`;
+  const className = [
+    styles[props.piece.color],
+    styles[props.piece.piece],
+    styles["piece"],
+  ].join(" ");
 
   const style = {
-    transform: `translate(
-      ${props.piece.coordinates.x * 100}%, 
-      ${(7 - props.piece.coordinates.y) * 100}%)`,
+    transform: `translate(${props.piece.coordinates.x * 100}%, ${(7 - props.piece.coordinates.y) * 100}%)`,
   };
 
   return (
