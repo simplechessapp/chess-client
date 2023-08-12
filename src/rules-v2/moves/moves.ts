@@ -1,5 +1,5 @@
 import { Board } from "@/models/Board";
-import { getPiece } from "../checks/cellChecks";
+import { getPiece, isOutOfBounds } from "../checks/cellChecks";
 import { Coordinates } from "@/models/Coordinates";
 
 export function makeMove(
@@ -13,6 +13,10 @@ export function makeMove(
   }
 
   if (from.x === to.x && from.y === to.y) {
+    return null;
+  }
+
+  if (isOutOfBounds(to)) {
     return null;
   }
 
