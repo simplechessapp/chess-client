@@ -1,7 +1,7 @@
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
-import { getPiece, isOutOfBounds } from "./cellChecks";
-import { areSameColor } from "./pieceChecks";
+import { getPiece, isOutOfBounds } from "./checks/cellChecks";
+import { areSameColor } from "./checks/pieceChecks";
 
 export function getAllBishopMoves(pieces: Piece[], bishop: Piece) {
   const validMoves: Coordinates[] = [];

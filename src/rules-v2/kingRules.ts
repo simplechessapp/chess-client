@@ -1,8 +1,8 @@
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
-import { getPiece } from "./cellChecks";
+import { getPiece } from "./checks/cellChecks";
 import { PieceEnum } from "@/utils/enums";
-import { areSameColor } from "./pieceChecks";
+import { areSameColor } from "./checks/pieceChecks";
 
 export function getAllKingRules(pieces: Piece[], king: Piece) {
   const validMoves: Coordinates[] = [];

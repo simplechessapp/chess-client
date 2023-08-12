@@ -5,7 +5,7 @@ import { initialBoard2 } from "@/utils/constants";
 import ChessPiece from "../piece/ChessPiece";
 import pieceStyles from "../piece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
-import { getPiece } from "@/rules-v2/cellChecks";
+import { getPiece } from "@/rules-v2/checks/cellChecks";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);

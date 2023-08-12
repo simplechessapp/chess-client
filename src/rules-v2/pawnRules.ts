@@ -1,8 +1,8 @@
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
 import { ColorEnum } from "@/utils/enums";
-import { getPiece, hasPiece } from "./cellChecks";
-import { areSameColor } from "./pieceChecks";
+import { getPiece, hasPiece } from "./checks/cellChecks";
+import { areSameColor } from "./checks/pieceChecks";
 
 export function getAllPawnMoves(pieces: Piece[], pawn: Piece) {
   const validMoves: Coordinates[] = [];
