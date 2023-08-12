@@ -5,7 +5,7 @@ import { initialBoard } from "@/utils/constants";
 import ChessPiece from "../chessPiece/ChessPiece";
 import pieceStyles from "../chessPiece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
-import { makeMove } from "@/rules-v2/moves/moves";
+
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -64,16 +64,6 @@ export default function Chessboard() {
         Math.floor(relativeX / 100),
         7 - Math.floor(relativeY / 100),
       ];
-
-      const newBoard = makeMove(board, startPos!, { x: cellX, y: cellY })
-
-      if (newBoard) {
-        setBoard(newBoard);
-      } else {
-        grabbedPiece.style.transform = `translate(${startPos!.x * 100}%, ${
-          (7 - startPos!.y) * 100
-        }%)`;
-      }
 
       grabbedPiece.classList.remove(pieceStyles["grabbing"]);
       setGrabbedPiece(null);
