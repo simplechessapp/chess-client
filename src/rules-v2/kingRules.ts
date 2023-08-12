@@ -56,4 +56,6 @@ export function getCastlingMoves(pieces: Piece[], king: Piece) {
       validMoves.push(move);
     }
   }
+
+  return validMoves;
 }
