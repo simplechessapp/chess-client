@@ -6,13 +6,16 @@ import ChessPiece from "../piece/ChessPiece";
 import pieceStyles from "../piece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
 import { getPiece } from "@/rules-v2/checks/cellChecks";
-import { makeMove } from "@/rules-v2/moves/moves";
+import { getValidMoves, makeMove } from "@/rules-v2/moves/moves";
+import Cell from "../cell-v2/Cell";
+
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
   const [board, setBoard] = useState<Board>(initialBoard2);
 
   const [grabbedPiece, setGrabbedPiece] = useState<HTMLElement | null>(null);
+  const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
 
   const [startPos, setStartPos] = useState<Coordinates | null>(null);
 
@@ -37,6 +40,12 @@ export default function Chessboard() {
         translateY - offset
       }%)`;
       piece.classList.add(pieceStyles["grabbing"]);
+
+      const pieceMoved = getPiece(board.pieces, { x: cellX, y: cellY });
+
+      if (pieceMoved) {
+        setValidMoves(getValidMoves(board, pieceMoved.coordinates));
+      }
 
       setStartPos({ x: cellX, y: cellY });
       setGrabbedPiece(piece);
@@ -79,6 +88,7 @@ export default function Chessboard() {
       grabbedPiece.classList.remove(pieceStyles["grabbing"]);
       setGrabbedPiece(null);
       setStartPos(null);
+      setValidMoves([]);
     }
   }
 
@@ -95,6 +105,20 @@ export default function Chessboard() {
     keyCounter++;
   }
 
+  const validMovesElements = [];
+  for (let move of validMoves) {
+    validMovesElements.push(
+      <Cell
+        coordinates={move}
+        key={keyCounter}
+        validMove={true}
+      />
+    );
+    keyCounter++;
+  }
+
+
+
   return (
     <div
       className={styles["chessboard"]}
@@ -104,6 +128,7 @@ export default function Chessboard() {
       ref={chessBoardRef}
     >
       {pieces}
+      {validMovesElements}
     </div>
   );
 }
