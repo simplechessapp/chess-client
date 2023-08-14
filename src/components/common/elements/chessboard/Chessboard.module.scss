@@ -1,30 +1,8 @@
-$chessboard-size: 800px;
-$white-square: #a8a18f;
-$black-square: #837c6a;
-
 .chessboard {
-  width: $chessboard-size;
-  height: $chessboard-size;
-  background-color: $white-square;
-  background-image: linear-gradient(
-      45deg,
-      $black-square 25%,
-      transparent 25%,
-      transparent 75%,
-      $black-square 75%,
-      $black-square
-    ),
-    linear-gradient(
-      45deg,
-      $black-square 25%,
-      transparent 25%,
-      transparent 75%,
-      $black-square 75%,
-      $black-square
-    );
+  height: 800px;
+  width: 800px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
 
-  background-size: $chessboard-size / 4 $chessboard-size / 4;
-  background-position: 0 0, $chessboard-size / 8 $chessboard-size / 8;
-
-  position: relative;
+  user-select: none !important;
 }

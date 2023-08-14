@@ -1,19 +1,29 @@
-import { useRef, useState } from "react";
-import styles from "./Chessboard.module.scss";
-import { Board } from "@/models/Board";
-import { initialBoard } from "@/utils/constants";
-import ChessPiece from "../chessPiece/ChessPiece";
-import pieceStyles from "../chessPiece/ChessPiece.module.scss";
-import { Coordinates } from "@/models/Coordinates";
+"use client";
 
+import React, { useRef } from "react";
+import styles from "./Chessboard.module.scss";
+import pieceStyles from "../cell/Cell.module.scss";
+import Cell from "../cell/Cell";
+import { initialBoard } from "@/utils/constants";
+import { PiecePosition, PieceCoordinates } from "@/utils/types";
+import { getAllPawnMoves, getValidMoves, isValidMove, makeMove } from "@/rules";
+import { getPiece } from "@/utils/common/boardFunctions";
+import { ColorEnum, PieceEnum } from "@/utils/enums";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
-  const [board, setBoard] = useState<Board>(initialBoard);
 
-  const [grabbedPiece, setGrabbedPiece] = useState<HTMLElement | null>(null);
+  const [grabbedPiece, setGrabbedPiece] = React.useState<HTMLElement | null>(
+    null
+  );
 
-  const [startPos, setStartPos] = useState<Coordinates | null>(null);
+  const [startPos, setStartPos] = React.useState<PieceCoordinates | null>(null);
+
+  const [pieces, setPieces] = React.useState<PiecePosition[]>(initialBoard);
+
+  const [validMoves, setValidMoves] = React.useState<PieceCoordinates[]>([]);
+
+  const [turn, setTurn] = React.useState<ColorEnum>(ColorEnum.WHITE);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
@@ -21,40 +31,9 @@ export default function Chessboard() {
       piece.classList.contains(pieceStyles["piece"]) &&
       chessBoardRef.current
     ) {
-      const offset = 50;
-      const [translateX, translateY] = [
-        e.clientX - chessBoardRef.current.offsetLeft,
-        e.clientY - chessBoardRef.current.offsetTop,
-      ];
+      const [x, y] = [e.clientX - 50, e.clientY - 50];
 
-      const [cellX, cellY] = [
-        Math.floor(translateX / 100),
-        7 - Math.floor(translateY / 100),
-      ];
-
-      piece.style.transform = `translate(${translateX - offset}%, ${
-        translateY - offset
-      }%)`;
-      piece.classList.add(pieceStyles["grabbing"]);
-
-      setStartPos({ x: cellX, y: cellY });
-      setGrabbedPiece(piece);
-    }
-  }
-
-  function movePiece(e: React.MouseEvent<HTMLDivElement>) {
-    if (grabbedPiece && chessBoardRef.current) {
-      const [translateX, translateY] = [
-        e.clientX - chessBoardRef.current.offsetLeft - 50,
-        e.clientY - chessBoardRef.current.offsetTop - 50,
-      ];
-
-      grabbedPiece.style.transform = `translate(${translateX}%, ${translateY}%)`;
-    }
-  }
-
-  function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
-    if (grabbedPiece && chessBoardRef.current) {
+      
       const [relativeX, relativeY] = [
         e.clientX - chessBoardRef.current.offsetLeft,
         e.clientY - chessBoardRef.current.offsetTop,
@@ -65,34 +44,93 @@ export default function Chessboard() {
         7 - Math.floor(relativeY / 100),
       ];
 
-      grabbedPiece.classList.remove(pieceStyles["grabbing"]);
-      setGrabbedPiece(null);
-      setStartPos(null);
+      if (getPiece(pieces, { x: cellX, y: cellY })?.color !== turn) {
+        return;
+      }
+
+      piece.style.position = "fixed";
+      piece.style.left = `${x}px`;
+      piece.style.top = `${y}px`;
+
+      setStartPos({
+        x: cellX,
+        y: cellY,
+      });
+
+      const pieceInCell = getPiece(pieces, { x: cellX, y: cellY });
+      setValidMoves(getValidMoves(pieces, pieceInCell!));
+
+      setGrabbedPiece(piece);
     }
   }
 
-  const pieces = [];
+  function movePiece(e: React.MouseEvent<HTMLDivElement>) {
+    if (grabbedPiece !== null) {
+      const [x, y] = [e.clientX - 50, e.clientY - 50];
 
-  let keyCounter = 0;
-  for (let piece of board.pieces) {
-    pieces.push(
-      <ChessPiece
-        piece={piece}
-        key={keyCounter}
-      />
-    );
-    keyCounter++;
+      grabbedPiece.style.left = `${x}px`;
+      grabbedPiece.style.top = `${y}px`;
+    }
+  }
+
+  function dropPiece(e: React.MouseEvent<HTMLDivElement>) {
+    if (grabbedPiece && chessBoardRef.current) {
+      const [x, y] = [
+        e.clientX - chessBoardRef.current.offsetLeft,
+        e.clientY - chessBoardRef.current.offsetTop,
+      ];
+
+      const [cellX, cellY] = [Math.floor(x / 100), 7 - Math.floor(y / 100)];
+
+      const currentPiece = getPiece(pieces, startPos!);
+
+      grabbedPiece.style.position = "static";
+      setGrabbedPiece(null);
+
+      if (
+        !currentPiece ||
+        !isValidMove(pieces, currentPiece, { x: cellX, y: cellY })
+      ) {
+        return;
+      }
+
+      setPieces(makeMove(pieces, currentPiece, { x: cellX, y: cellY }));
+      setValidMoves([]);
+      setStartPos(null);
+      setTurn(turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE);
+    }
+  }
+
+  let board = [];
+
+  for (let i = 7; i >= 0; i--) {
+    for (let j = 0; j < 8; j++) {
+      let cellNumber = i * 8 + j + 1;
+      const cellContent = getPiece(pieces, { x: j, y: i });
+      board.push(
+        <Cell
+          key={cellNumber}
+          colorNumber={i + j + 2}
+          piece={cellContent?.piece}
+          color={cellContent?.color}
+          validMove={validMoves.some(
+            (move) => move.x === j && move.y === i
+          )}
+          highlight={startPos?.x === j && startPos.y === i}
+        />
+      );
+    }
   }
 
   return (
     <div
       className={styles["chessboard"]}
-      onMouseDown={grabPiece}
-      onMouseMove={movePiece}
-      onMouseUp={dropPiece}
+      onMouseDown={(e) => grabPiece(e)}
+      onMouseMove={(e) => movePiece(e)}
+      onMouseUp={(e) => dropPiece(e)}
       ref={chessBoardRef}
     >
-      {pieces}
+      {board}
     </div>
   );
 }

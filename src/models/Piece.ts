@@ -5,4 +5,6 @@ export type Piece = {
   coordinates: Coordinates;
   color: ColorEnum;
   piece: PieceEnum;
+  hasMoved: boolean;
+  possibleMoves?: Coordinates[];
 }
