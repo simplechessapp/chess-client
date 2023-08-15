@@ -31,7 +31,9 @@ export function getCastlingMoves(pieces: Piece[], king: Piece) {
 
   if (king.hasMoved) return validMoves;
 
-  const rooks = pieces.filter((p) => p.piece === PieceEnum.ROOK && !p.hasMoved);
+  const rooks = pieces.filter((p) => p.piece === PieceEnum.ROOK && !p.hasMoved && p.color === king.color);
+
+  // check if there are pieces in a way to rooks
 
   for (const rook of rooks) {
     if (rook.coordinates.x > king.coordinates.x) {
@@ -39,16 +41,20 @@ export function getCastlingMoves(pieces: Piece[], king: Piece) {
         x: king.coordinates.x + 2,
         y: king.coordinates.y,
       };
-      const piece = getPiece(pieces, move);
-
-      if (piece) continue;
-
+      for (let i = king.coordinates.x + 1; i < rook.coordinates.x; i++) {
+        const piece = getPiece(pieces, { x: i, y: king.coordinates.y });
+        if (piece) return validMoves;
+      }
       validMoves.push(move);
     } else {
       const move: Coordinates = {
         x: king.coordinates.x - 2,
         y: king.coordinates.y,
       };
+      for (let i = king.coordinates.x - 1; i > rook.coordinates.x; i--) {
+        const piece = getPiece(pieces, { x: i, y: king.coordinates.y });
+        if (piece) return validMoves;
+      }
       const piece = getPiece(pieces, move);
 
       if (piece) continue;

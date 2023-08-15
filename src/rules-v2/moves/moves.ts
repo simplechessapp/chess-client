@@ -31,6 +31,7 @@ export function makeMove(
   }
 
   transformBoard(board, from, to);
+  fromPiece.hasMoved = true;
   return true;
 }
 
