@@ -6,9 +6,8 @@ import ChessPiece from "../piece/ChessPiece";
 import pieceStyles from "../piece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
 import { getPiece } from "@/rules-v2/checks/cellChecks";
-import { getValidMoves, makeMove } from "@/rules-v2/moves/moves";
+import { filterInvalidMoves, getValidMoves, makeMove } from "@/rules-v2/moves/moves";
 import Cell from "../cell-v2/Cell";
-
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -36,16 +35,18 @@ export default function Chessboard() {
         7 - Math.floor(translateY / 100),
       ];
 
+      const pieceMoved = getPiece(board.pieces, { x: cellX, y: cellY });
+
+      if (!pieceMoved || pieceMoved.color !== board.turn) {
+        return;
+      }
+
       piece.style.transform = `translate(${translateX - offset}%, ${
         translateY - offset
       }%)`;
       piece.classList.add(pieceStyles["grabbing"]);
 
-      const pieceMoved = getPiece(board.pieces, { x: cellX, y: cellY });
-
-      if (pieceMoved) {
-        setValidMoves(getValidMoves(board, pieceMoved.coordinates));
-      }
+      setValidMoves(filterInvalidMoves(board, pieceMoved.coordinates, board.turn));
 
       setStartPos({ x: cellX, y: cellY });
       setGrabbedPiece(piece);
@@ -116,8 +117,6 @@ export default function Chessboard() {
     );
     keyCounter++;
   }
-
-
 
   return (
     <div
