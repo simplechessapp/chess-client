@@ -76,6 +76,7 @@ export const initialBoard2: Board = {
     ],
     amountOfMoves: 1,
     turn: ColorEnum.WHITE,
+    enPassantPawn: null,
 }
 
 
