@@ -74,7 +74,8 @@ export const initialBoard2: Board = {
         {coordinates: {x: 6, y: 7}, color: ColorEnum.BLACK, piece: PieceEnum.KNIGHT, hasMoved: false},
         {coordinates: {x: 7, y: 7}, color: ColorEnum.BLACK, piece: PieceEnum.ROOK, hasMoved: false},
     ],
-    amountOfMoves: 1
+    amountOfMoves: 1,
+    turn: ColorEnum.WHITE,
 }
 
 

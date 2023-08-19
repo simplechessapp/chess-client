@@ -17,9 +17,16 @@ export function makeMove(
 ): boolean {
   const fromPiece = getPiece(board.pieces, from);
 
+
   if (!fromPiece) {
     return false;
   }
+
+  if (fromPiece.color !== board.turn) {
+    return false;
+  }
+
+
   const validMoves = filterInvalidMoves(
     board,
     fromPiece.coordinates,
@@ -32,6 +39,7 @@ export function makeMove(
 
   transformBoard(board, from, to);
   fromPiece.hasMoved = true;
+  board.turn = board.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
   return true;
 }
 
