@@ -6,4 +6,5 @@ export type Board = {
   pieces: Piece[];
   amountOfMoves: number;
   turn: ColorEnum;
+  enPassantPawn: Piece | null;
 }
