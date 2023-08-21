@@ -38,7 +38,8 @@ export function getAllRegularPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
 
   if (
     pawn.coordinates.y === specialMove &&
-    !hasPiece(board, specialMoveCoordinates)
+    !hasPiece(board, specialMoveCoordinates) &&
+    !hasPiece(board, regularMove)
   ) {
     validMoves.push({
         dest: specialMoveCoordinates,
