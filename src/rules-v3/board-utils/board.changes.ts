@@ -3,6 +3,9 @@ import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
 import { getPiece, isSamePiece } from "./board.utils";
 import { PieceEnum } from "@/utils/enums";
+import { getAllPawnMoves } from "../move-rules/pawn.rules";
+import { MoveInfo } from "@/models/MoveInfo";
+import { getAllKnightMoves } from "../move-rules/knight.rules";
 
 export function doCastling(
   board: Board,
@@ -65,6 +68,19 @@ export function doPromotion(
     ...board,
     pieces: board.pieces
       .filter((p) => !isSamePiece(p, pawn))
-      .map((p) => (isSamePiece(p, pawn) ? { ...p, coordinates: dest, piece: to } : p)), 
+      .map((p) =>
+        isSamePiece(p, pawn) ? { ...p, coordinates: dest, piece: to } : p
+      ),
   };
+}
+
+export function getValidMoves(board: Board, piece: Piece): MoveInfo[] {
+  switch (piece.piece) {
+    case PieceEnum.PAWN:
+      return getAllPawnMoves(board, piece);
+    case PieceEnum.KNIGHT:
+      return getAllKnightMoves(board, piece);
+    default:
+      return [];
+  }
 }
