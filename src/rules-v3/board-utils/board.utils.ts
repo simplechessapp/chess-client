@@ -46,3 +46,12 @@ export function isSamePiece(piece1: Piece, piece2: Piece): boolean {
     areSameCoordinates(piece1.coordinates, piece2.coordinates)
   );
 }
+
+export function isOutOfBounds(coordinates: Coordinates): boolean {
+  return (
+    coordinates.x < 0 ||
+    coordinates.x > 7 ||
+    coordinates.y < 0 ||
+    coordinates.y > 7
+  );
+}
