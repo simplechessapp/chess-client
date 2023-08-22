@@ -7,6 +7,7 @@ import { getAllPawnMoves } from "../move-rules/pawn.rules";
 import { MoveInfo } from "@/models/MoveInfo";
 import { getAllKnightMoves } from "../move-rules/knight.rules";
 import { getAllBishopMoves } from "../move-rules/bishop.rules";
+import { getAllRookMoves } from "../move-rules/rook.rules";
 
 export function doCastling(
   board: Board,
@@ -83,6 +84,8 @@ export function getValidMoves(board: Board, piece: Piece): MoveInfo[] {
       return getAllKnightMoves(board, piece);
     case PieceEnum.BISHOP:
       return getAllBishopMoves(board, piece);
+    case PieceEnum.ROOK:
+      return getAllRookMoves(board, piece);
     default:
       return [];
   }
