@@ -12,7 +12,7 @@ import {
   makeMove,
 } from "@/rules-v2/moves/moves";
 import {
-  getValidMoves as gvm,
+  getValidatedMoves as gvm,
   performMove,
 } from "@/rules-v3/board-utils/board.changes";
 import Cell from "../cell-v2/Cell";

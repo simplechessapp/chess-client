@@ -1,7 +1,12 @@
 import { Board } from "@/models/Board";
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
-import { areSameCoordinates, getPiece, isSamePiece } from "./board.utils";
+import {
+  areSameCoordinates,
+  getPiece,
+  isCellUnderAttack,
+  isSamePiece,
+} from "./board.utils";
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import {
   getAllEnPassantCaptures,
@@ -109,7 +114,11 @@ export function getValidMoves(board: Board, piece: Piece): MoveInfo[] {
   }
 }
 
-export function changePosition(board: Board, piece: Piece, move: MoveInfo) : Board {
+export function changePosition(
+  board: Board,
+  piece: Piece,
+  move: MoveInfo
+): Board {
   const newBoard = structuredClone(board);
   newBoard.turn =
     newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
@@ -136,13 +145,53 @@ export function changePosition(board: Board, piece: Piece, move: MoveInfo) : Boa
   return returnBoard;
 }
 
+export function getValidatedMoves(board: Board, piece: Piece): MoveInfo[] {
+  const moves = getValidMoves(board, piece);
+  return validateMoves(board, piece, moves);
+}
+
+export function isKingInCheck(board: Board, color: ColorEnum): boolean {
+  const king = board.pieces.find(
+    (p) => p.piece === PieceEnum.KING && p.color === color
+  )!;
+
+  return isCellUnderAttack(board, king.coordinates, color);
+}
+
+export function validateMoves(
+  board: Board,
+  piece: Piece,
+  moves: MoveInfo[]
+): MoveInfo[] {
+  return moves.filter((m) => {
+    if (m.castling) {
+      const castlingDirection = m.dest.x === 2 ? -1 : 1;
+      const checkCells = [
+        { x: piece.coordinates.x + castlingDirection, y: piece.coordinates.y },
+        {
+          x: piece.coordinates.x + castlingDirection * 2,
+          y: piece.coordinates.y,
+        },
+      ];
+
+      return (
+        !isKingInCheck(board, board.turn) &&
+        !checkCells.some((c) => isCellUnderAttack(board, c, board.turn))
+      );
+    }
+
+    const newBoard = changePosition(board, piece, m);
+    return !isKingInCheck(newBoard, board.turn);
+  });
+}
+
 export function performMove(
   board: Board,
   start: Coordinates,
   dest: Coordinates
 ): Board | undefined {
   const piece = getPiece(board, start)!;
-  const validMoves = getValidMoves(board, piece);
+  const validMoves = getValidatedMoves(board, piece);
   const validMove = validMoves.find(
     (m) => m.dest.x === dest.x && m.dest.y === dest.y
   );
@@ -152,5 +201,4 @@ export function performMove(
   }
 
   return changePosition(board, piece, validMove);
-
 }

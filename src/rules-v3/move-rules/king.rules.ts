@@ -2,7 +2,7 @@ import { Board } from "@/models/Board";
 import { Coordinates } from "@/models/Coordinates";
 import { MoveInfo } from "@/models/MoveInfo";
 import { Piece } from "@/models/Piece";
-import { areSameColor, getPiece, hasPiece, isOutOfBounds } from "../board-utils";
+import { areSameColor, getPiece, hasPiece, isCellUnderAttack, isOutOfBounds } from "../board-utils";
 
 export function getAllKingMoves(board: Board, king: Piece): MoveInfo[] {
     return [
@@ -72,7 +72,7 @@ export function getCastlingMoves(board: Board, king: Piece): MoveInfo[] {
     if (
       !hasPiece(board, { x: 1, y: king.coordinates.y }) &&
       !hasPiece(board, { x: 2, y: king.coordinates.y }) &&
-      !hasPiece(board, { x: 3, y: king.coordinates.y })
+      !hasPiece(board, { x: 3, y: king.coordinates.y }) 
     ) {
       validMoves.push({
         dest: { x: 2, y: king.coordinates.y },
