@@ -7,4 +7,5 @@ export type Board = {
   amountOfMoves: number;
   turn: ColorEnum;
   enPassantPawn: Piece | null;
+  kingInCheck?: Coordinates;
 }

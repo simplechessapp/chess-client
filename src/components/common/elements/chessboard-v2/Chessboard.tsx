@@ -17,6 +17,7 @@ import {
 } from "@/rules-v3/board-utils/board.changes";
 import Cell from "../cell-v2/Cell";
 import { MoveInfo } from "@/models/MoveInfo";
+import { ColorEnum, PieceEnum } from "@/utils/enums";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -26,6 +27,7 @@ export default function Chessboard() {
   const [validMoves, setValidMoves] = useState<MoveInfo[]>([]);
 
   const [startPos, setStartPos] = useState<Coordinates | null>(null);
+  const [showPromotion, setShowPromotion] = useState<boolean>(true);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
@@ -130,6 +132,19 @@ export default function Chessboard() {
     keyCounter++;
   }
 
+  const additionalElements = [];
+
+  if (board.kingInCheck) {
+    additionalElements.push(
+      <Cell
+        coordinates={board.kingInCheck}
+        key={keyCounter}
+        check={true}
+      />
+    );
+    keyCounter++;
+  }
+
   return (
     <div
       className={styles["chessboard"]}
@@ -138,8 +153,9 @@ export default function Chessboard() {
       onMouseUp={dropPiece}
       ref={chessBoardRef}
     >
-      {pieces}
       {validMovesElements}
+      {additionalElements}
+      {pieces}
     </div>
   );
 }
