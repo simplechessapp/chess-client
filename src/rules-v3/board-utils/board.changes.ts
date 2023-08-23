@@ -109,6 +109,33 @@ export function getValidMoves(board: Board, piece: Piece): MoveInfo[] {
   }
 }
 
+export function changePosition(board: Board, piece: Piece, move: MoveInfo) : Board {
+  const newBoard = structuredClone(board);
+  newBoard.turn =
+    newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
+  newBoard.amountOfMoves++;
+
+  if (move.capture) {
+    return doCapture(newBoard, piece, move.dest);
+  }
+
+  if (move.castling) {
+    return doCastling(newBoard, piece, move.dest);
+  }
+
+  if (move.enPassant) {
+    return doEnPassant(newBoard, piece, move.dest);
+  }
+
+  const returnBoard = doMove(newBoard, piece, move.dest);
+
+  if (move.doublePawn) {
+    returnBoard.enPassantPawn = getPiece(returnBoard, move.dest)!;
+  }
+
+  return returnBoard;
+}
+
 export function performMove(
   board: Board,
   start: Coordinates,
@@ -124,28 +151,6 @@ export function performMove(
     return undefined;
   }
 
-  const newBoard = structuredClone(board);
-  newBoard.turn =
-    newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
-  newBoard.amountOfMoves++;
+  return changePosition(board, piece, validMove);
 
-  if (validMove.capture) {
-    return doCapture(newBoard, piece, dest);
-  }
-
-  if (validMove.castling) {
-    return doCastling(newBoard, piece, dest);
-  }
-
-  if (validMove.enPassant) {
-    return doEnPassant(newBoard, piece, dest);
-  }
-
-  const returnBoard = doMove(newBoard, piece, dest);
-
-  if (validMove.doublePawn) {
-    returnBoard.enPassantPawn = getPiece(returnBoard, dest)!;
-  }
-
-  return returnBoard;
 }
