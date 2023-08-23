@@ -1,9 +1,12 @@
 import { Board } from "@/models/Board";
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
-import { getPiece, isSamePiece } from "./board.utils";
+import { areSameCoordinates, getPiece, isSamePiece } from "./board.utils";
 import { ColorEnum, PieceEnum } from "@/utils/enums";
-import { getAllPawnMoves } from "../move-rules/pawn.rules";
+import {
+  getAllEnPassantCaptures,
+  getAllPawnMoves,
+} from "../move-rules/pawn.rules";
 import { MoveInfo } from "@/models/MoveInfo";
 import { getAllKnightMoves } from "../move-rules/knight.rules";
 import { getAllBishopMoves } from "../move-rules/bishop.rules";
@@ -122,7 +125,8 @@ export function performMove(
   }
 
   const newBoard = structuredClone(board);
-  newBoard.turn = newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
+  newBoard.turn =
+    newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
   newBoard.amountOfMoves++;
 
   if (validMove.capture) {
@@ -137,5 +141,11 @@ export function performMove(
     return doEnPassant(newBoard, piece, dest);
   }
 
-  return doMove(newBoard, piece, dest);
+  const returnBoard = doMove(newBoard, piece, dest);
+
+  if (validMove.doublePawn) {
+    returnBoard.enPassantPawn = getPiece(returnBoard, dest)!;
+  }
+
+  return returnBoard;
 }

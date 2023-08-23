@@ -5,4 +5,5 @@ export type MoveInfo = {
     capture?: boolean;
     enPassant?: boolean;
     castling?: boolean; 
+    doublePawn?: boolean;
 }

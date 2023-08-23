@@ -43,6 +43,7 @@ export function getAllRegularPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
   ) {
     validMoves.push({
         dest: specialMoveCoordinates,
+        doublePawn: true,
     });
   }
 
@@ -106,7 +107,7 @@ export function getAllEnPassantCaptures(board: Board, pawn: Piece): MoveInfo[] {
   const pawnOnLeftPiece = getPiece(board, pawnOnLeft);
   const pawnOnRightPiece = getPiece(board, pawnOnRight);
 
-  if (isSamePiece(enPassantPawn, pawnOnLeftPiece!)) {
+  if (pawnOnLeftPiece && isSamePiece(enPassantPawn, pawnOnLeftPiece)) {
     const captureLeft: MoveInfo = {
       dest: {
         x: pawn.coordinates.x - 1,
@@ -117,7 +118,7 @@ export function getAllEnPassantCaptures(board: Board, pawn: Piece): MoveInfo[] {
     validMoves.push(captureLeft);
   }
 
-  if (isSamePiece(enPassantPawn, pawnOnRightPiece!)) {
+  if (pawnOnRightPiece && isSamePiece(enPassantPawn, pawnOnRightPiece)) {
     const captureRight: MoveInfo = {
       dest: {
         x: pawn.coordinates.x + 1,
