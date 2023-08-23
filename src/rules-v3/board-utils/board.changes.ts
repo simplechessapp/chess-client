@@ -2,7 +2,7 @@ import { Board } from "@/models/Board";
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
 import { getPiece, isSamePiece } from "./board.utils";
-import { PieceEnum } from "@/utils/enums";
+import { ColorEnum, PieceEnum } from "@/utils/enums";
 import { getAllPawnMoves } from "../move-rules/pawn.rules";
 import { MoveInfo } from "@/models/MoveInfo";
 import { getAllKnightMoves } from "../move-rules/knight.rules";
@@ -20,8 +20,9 @@ export function doCastling(
   const newRook = {
     ...rook,
     coordinates: { x: dest.x === 2 ? 3 : 5, y: dest.y },
+    hasMoved: true,
   };
-  const newKing = { ...king, coordinates: dest };
+  const newKing = { ...king, coordinates: dest, hasMoved: true };
   return {
     ...board,
     pieces: board.pieces.map((p) =>
@@ -41,15 +42,23 @@ export function doEnPassant(
     ...board,
     pieces: board.pieces
       .filter((p) => !isSamePiece(p, capturedPawn))
-      .map((p) => (isSamePiece(p, pawn) ? { ...p, coordinates: dest } : p)),
+      .map((p) =>
+        isSamePiece(p, pawn) ? { ...p, coordinates: dest, hasMoved: true } : p
+      ),
   };
 }
 
-export function doCapture(board: Board, dest: Coordinates): Board {
+export function doCapture(
+  board: Board,
+  piece: Piece,
+  dest: Coordinates
+): Board {
   const capturedPiece = getPiece(board, dest)!;
   return {
     ...board,
-    pieces: board.pieces.filter((p) => !isSamePiece(p, capturedPiece)),
+    pieces: board.pieces
+      .filter((p) => !isSamePiece(p, capturedPiece))
+      .map((p) => (isSamePiece(p, piece) ? { ...p, coordinates: dest } : p)),
   };
 }
 
@@ -95,4 +104,38 @@ export function getValidMoves(board: Board, piece: Piece): MoveInfo[] {
     default:
       return [];
   }
+}
+
+export function performMove(
+  board: Board,
+  start: Coordinates,
+  dest: Coordinates
+): Board | undefined {
+  const piece = getPiece(board, start)!;
+  const validMoves = getValidMoves(board, piece);
+  const validMove = validMoves.find(
+    (m) => m.dest.x === dest.x && m.dest.y === dest.y
+  );
+
+  if (!validMove) {
+    return undefined;
+  }
+
+  const newBoard = structuredClone(board);
+  newBoard.turn = newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
+  newBoard.amountOfMoves++;
+
+  if (validMove.capture) {
+    return doCapture(newBoard, piece, dest);
+  }
+
+  if (validMove.castling) {
+    return doCastling(newBoard, piece, dest);
+  }
+
+  if (validMove.enPassant) {
+    return doEnPassant(newBoard, piece, dest);
+  }
+
+  return doMove(newBoard, piece, dest);
 }

@@ -6,8 +6,15 @@ import ChessPiece from "../piece/ChessPiece";
 import pieceStyles from "../piece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
 import { getPiece } from "@/rules-v2/checks/cellChecks";
-import { filterInvalidMoves, getValidMoves, makeMove } from "@/rules-v2/moves/moves";
-import { getValidMoves as gvm } from "@/rules-v3/board-utils/board.changes";
+import {
+  filterInvalidMoves,
+  getValidMoves,
+  makeMove,
+} from "@/rules-v2/moves/moves";
+import {
+  getValidMoves as gvm,
+  performMove,
+} from "@/rules-v3/board-utils/board.changes";
 import Cell from "../cell-v2/Cell";
 import { MoveInfo } from "@/models/MoveInfo";
 
@@ -48,7 +55,9 @@ export default function Chessboard() {
       }%)`;
       piece.classList.add(pieceStyles["grabbing"]);
 
-      setValidMoves(gvm(board, getPiece(board.pieces, { x: cellX, y: cellY })!));
+      setValidMoves(
+        gvm(board, getPiece(board.pieces, { x: cellX, y: cellY })!)
+      );
 
       setStartPos({ x: cellX, y: cellY });
       setGrabbedPiece(piece);
@@ -78,9 +87,9 @@ export default function Chessboard() {
         7 - Math.floor(relativeY / 100),
       ];
 
-      const newBoard = structuredClone(board);
+      const newBoard = performMove(board, startPos!, { x: cellX, y: cellY });
 
-      if (makeMove(newBoard, startPos!, { x: cellX, y: cellY })) {
+      if (newBoard) {
         setBoard(newBoard);
       } else {
         grabbedPiece.style.transform = `translate(${startPos!.x * 100}%, ${
