@@ -6,6 +6,7 @@ import {
   getPiece,
   isCellUnderAttack,
   isSamePiece,
+  oppositeColor,
 } from "./board.utils";
 import { ColorEnum, PieceEnum } from "@/utils/enums";
 import {
@@ -140,6 +141,8 @@ export function changePosition(
 
   if (move.doublePawn) {
     returnBoard.enPassantPawn = getPiece(returnBoard, move.dest)!;
+  } else {
+    returnBoard.enPassantPawn = null;
   }
 
   return returnBoard;
@@ -200,5 +203,15 @@ export function performMove(
     return undefined;
   }
 
-  return changePosition(board, piece, validMove);
+  const newBoard =  changePosition(board, piece, validMove);
+  if (isKingInCheck(newBoard, newBoard.turn)) {
+    const kingCoordinates = newBoard.pieces.find(
+      (p) => p.piece === PieceEnum.KING && p.color === newBoard.turn
+    )!.coordinates;
+    newBoard.kingInCheck = kingCoordinates; 
+  } else {
+    newBoard.kingInCheck = undefined;
+  }
+
+  return newBoard;
 }
