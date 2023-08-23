@@ -7,11 +7,11 @@ import { Board } from "@/models/Board";
 import { MoveInfo } from "@/models/MoveInfo";
 
 export function getAllPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
-  const validCaptures = getAllPawnCaptures(board, pawn);
-  const validRegularMoves = getAllRegularPawnMoves(board, pawn);
-  const validEnPassantCaptures = getAllEnPassantCaptures(board, pawn);
-
-  return [...validCaptures, ...validRegularMoves, ...validEnPassantCaptures];
+  return [
+    ...getAllRegularPawnMoves(board, pawn),
+    ...getAllPawnCaptures(board, pawn),
+    ...getAllEnPassantCaptures(board, pawn),
+  ]
 }
 
 export function getAllRegularPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
