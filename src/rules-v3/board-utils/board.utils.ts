@@ -1,6 +1,8 @@
 import { Board } from "@/models/Board";
 import { Coordinates } from "@/models/Coordinates";
 import { Piece } from "@/models/Piece";
+import { ColorEnum, PieceEnum } from "@/utils/enums";
+import { getValidMoves } from "./board.changes";
 
 export function getPiece(board: Board, coordinates: Coordinates): Piece | null {
   return (
@@ -45,4 +47,31 @@ export function isSamePiece(piece1: Piece, piece2: Piece): boolean {
     piece1.color === piece2.color &&
     areSameCoordinates(piece1.coordinates, piece2.coordinates)
   );
+}
+
+export function isOutOfBounds(coordinates: Coordinates): boolean {
+  return (
+    coordinates.x < 0 ||
+    coordinates.x > 7 ||
+    coordinates.y < 0 ||
+    coordinates.y > 7
+  );
+}
+
+export function isCellUnderAttack(
+  board: Board,
+  coordinates: Coordinates,
+  color: ColorEnum
+): boolean {
+  return board.pieces.some(
+    (p) =>
+      p.color !== color &&
+      getValidMoves(board, p).some((m) =>
+        areSameCoordinates(m.dest, coordinates)
+      )
+  );
+}
+
+export function oppositeColor(color: ColorEnum): ColorEnum {
+  return color === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
 }

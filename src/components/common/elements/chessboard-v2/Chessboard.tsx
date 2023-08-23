@@ -6,17 +6,28 @@ import ChessPiece from "../piece/ChessPiece";
 import pieceStyles from "../piece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
 import { getPiece } from "@/rules-v2/checks/cellChecks";
-import { filterInvalidMoves, getValidMoves, makeMove } from "@/rules-v2/moves/moves";
+import {
+  filterInvalidMoves,
+  getValidMoves,
+  makeMove,
+} from "@/rules-v2/moves/moves";
+import {
+  getValidatedMoves as gvm,
+  performMove,
+} from "@/rules-v3/board-utils/board.changes";
 import Cell from "../cell-v2/Cell";
+import { MoveInfo } from "@/models/MoveInfo";
+import { ColorEnum, PieceEnum } from "@/utils/enums";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
   const [board, setBoard] = useState<Board>(initialBoard2);
 
   const [grabbedPiece, setGrabbedPiece] = useState<HTMLElement | null>(null);
-  const [validMoves, setValidMoves] = useState<Coordinates[]>([]);
+  const [validMoves, setValidMoves] = useState<MoveInfo[]>([]);
 
   const [startPos, setStartPos] = useState<Coordinates | null>(null);
+  const [showPromotion, setShowPromotion] = useState<boolean>(true);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
     const piece = e.target as HTMLDivElement;
@@ -46,7 +57,9 @@ export default function Chessboard() {
       }%)`;
       piece.classList.add(pieceStyles["grabbing"]);
 
-      setValidMoves(filterInvalidMoves(board, pieceMoved.coordinates, board.turn));
+      setValidMoves(
+        gvm(board, getPiece(board.pieces, { x: cellX, y: cellY })!)
+      );
 
       setStartPos({ x: cellX, y: cellY });
       setGrabbedPiece(piece);
@@ -76,9 +89,9 @@ export default function Chessboard() {
         7 - Math.floor(relativeY / 100),
       ];
 
-      const newBoard = structuredClone(board);
+      const newBoard = performMove(board, startPos!, { x: cellX, y: cellY });
 
-      if (makeMove(newBoard, startPos!, { x: cellX, y: cellY })) {
+      if (newBoard) {
         setBoard(newBoard);
       } else {
         grabbedPiece.style.transform = `translate(${startPos!.x * 100}%, ${
@@ -110,9 +123,23 @@ export default function Chessboard() {
   for (let move of validMoves) {
     validMovesElements.push(
       <Cell
-        coordinates={move}
+        coordinates={move.dest}
         key={keyCounter}
         validMove={true}
+        validCapture={move.capture}
+      />
+    );
+    keyCounter++;
+  }
+
+  const additionalElements = [];
+
+  if (board.kingInCheck) {
+    additionalElements.push(
+      <Cell
+        coordinates={board.kingInCheck}
+        key={keyCounter}
+        check={true}
       />
     );
     keyCounter++;
@@ -126,8 +153,9 @@ export default function Chessboard() {
       onMouseUp={dropPiece}
       ref={chessBoardRef}
     >
-      {pieces}
       {validMovesElements}
+      {additionalElements}
+      {pieces}
     </div>
   );
 }

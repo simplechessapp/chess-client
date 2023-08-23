@@ -7,11 +7,11 @@ import { Board } from "@/models/Board";
 import { MoveInfo } from "@/models/MoveInfo";
 
 export function getAllPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
-  const validCaptures = getAllPawnCaptures(board, pawn);
-  const validRegularMoves = getAllRegularPawnMoves(board, pawn);
-  const validEnPassantCaptures = getAllEnPassantCaptures(board, pawn);
-
-  return [...validCaptures, ...validRegularMoves, ...validEnPassantCaptures];
+  return [
+    ...getAllRegularPawnMoves(board, pawn),
+    ...getAllPawnCaptures(board, pawn),
+    ...getAllEnPassantCaptures(board, pawn),
+  ]
 }
 
 export function getAllRegularPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
@@ -38,10 +38,12 @@ export function getAllRegularPawnMoves(board: Board, pawn: Piece): MoveInfo[] {
 
   if (
     pawn.coordinates.y === specialMove &&
-    !hasPiece(board, specialMoveCoordinates)
+    !hasPiece(board, specialMoveCoordinates) &&
+    !hasPiece(board, regularMove)
   ) {
     validMoves.push({
         dest: specialMoveCoordinates,
+        doublePawn: true,
     });
   }
 
@@ -105,7 +107,7 @@ export function getAllEnPassantCaptures(board: Board, pawn: Piece): MoveInfo[] {
   const pawnOnLeftPiece = getPiece(board, pawnOnLeft);
   const pawnOnRightPiece = getPiece(board, pawnOnRight);
 
-  if (isSamePiece(enPassantPawn, pawnOnLeftPiece!)) {
+  if (pawnOnLeftPiece && isSamePiece(enPassantPawn, pawnOnLeftPiece)) {
     const captureLeft: MoveInfo = {
       dest: {
         x: pawn.coordinates.x - 1,
@@ -116,7 +118,7 @@ export function getAllEnPassantCaptures(board: Board, pawn: Piece): MoveInfo[] {
     validMoves.push(captureLeft);
   }
 
-  if (isSamePiece(enPassantPawn, pawnOnRightPiece!)) {
+  if (pawnOnRightPiece && isSamePiece(enPassantPawn, pawnOnRightPiece)) {
     const captureRight: MoveInfo = {
       dest: {
         x: pawn.coordinates.x + 1,

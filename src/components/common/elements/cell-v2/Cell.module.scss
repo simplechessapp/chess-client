@@ -1,9 +1,9 @@
 .cell {
-    position: absolute;
-    height: 100px;
-    width: 100px;
-    top: 0;
-    left: 0;
+  position: absolute;
+  height: 100px;
+  width: 100px;
+  top: 0;
+  left: 0;
 }
 
 .highlight {
@@ -47,5 +47,14 @@
 }
 
 .check {
-  background-color: #ff0000;
+  content: "";
+  background: radial-gradient(
+    ellipse at center,
+    rgb(255, 0, 0) 0%,
+    rgb(231, 0, 0) 25%,
+    rgba(169, 0, 0, 0) 89%,
+    rgba(158, 0, 0, 0) 100%
+  );
+  height: 100px;
+  width: 100px;
 }
