@@ -28,3 +28,33 @@ $black-square: #837c6a;
 
   position: relative;
 }
+
+.promotion {
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $chessboard-size;
+  height: $chessboard-size;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.promotion-piece {
+  width: 100px;
+  height: 100px;
+  z-index: 101;
+
+  background-size: 100px 100px;
+  user-select: none;
+}
+
+.promotion-piece:hover {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
+}
