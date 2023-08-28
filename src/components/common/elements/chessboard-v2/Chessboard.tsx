@@ -5,22 +5,16 @@ import { initialBoard2 } from "@/utils/constants";
 import ChessPiece from "../piece/ChessPiece";
 import pieceStyles from "../piece/ChessPiece.module.scss";
 import { Coordinates } from "@/models/Coordinates";
-import { getPiece } from "@/rules-v2/checks/cellChecks";
-import {
-  filterInvalidMoves,
-  getValidMoves,
-  makeMove,
-} from "@/rules-v2/moves/moves";
 import {
   finishMove,
-  getValidatedMoves as gvm,
+  getValidatedMoves,
   performMove,
   promotePawn,
 } from "@/rules-v3/board-utils/board.changes";
 import Cell from "../cell-v2/Cell";
 import { MoveInfo } from "@/models/MoveInfo";
 import { ColorEnum, PieceEnum } from "@/utils/enums";
-import { isPawnPromoting } from "@/rules-v3/board-utils";
+import { getPiece, isPawnPromoting } from "@/rules-v3/board-utils";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -54,7 +48,7 @@ export default function Chessboard() {
         7 - Math.floor(translateY / 100),
       ];
 
-      const pieceMoved = getPiece(board.pieces, { x: cellX, y: cellY });
+      const pieceMoved = getPiece(board, { x: cellX, y: cellY });
 
       if (!pieceMoved || pieceMoved.color !== board.turn) {
         return;
@@ -66,7 +60,7 @@ export default function Chessboard() {
       piece.classList.add(pieceStyles["grabbing"]);
 
       setValidMoves(
-        gvm(board, getPiece(board.pieces, { x: cellX, y: cellY })!)
+        getValidatedMoves(board, getPiece(board, { x: cellX, y: cellY })!)
       );
 
       setStartPos({ x: cellX, y: cellY });
