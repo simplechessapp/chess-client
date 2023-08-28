@@ -150,6 +150,21 @@ export default function Chessboard() {
     keyCounter++;
   }
 
+  function PromotionPiece(props: { piece: PieceEnum }) {
+    return (
+      <div
+        className={`
+          ${styles["promotion-piece"]} 
+          ${pieceStyles[`${board.turn}`]} 
+          ${pieceStyles[`${props.piece}`]}
+        `}
+        onClick={() => {
+          choosePiece(props.piece);
+        }}
+      ></div>
+    );
+  }
+
   const validMovesElements = [];
   for (let move of validMoves) {
     validMovesElements.push(
@@ -189,30 +204,10 @@ export default function Chessboard() {
       {pieces}
       {showPromotion && (
         <div className={styles["promotion"]}>
-          <div
-            className={getPromotionClassname(PieceEnum.QUEEN)}
-            onClick={() => {
-              choosePiece(PieceEnum.QUEEN);
-            }}
-          ></div>
-          <div
-            className={getPromotionClassname(PieceEnum.ROOK)}
-            onClick={() => {
-              choosePiece(PieceEnum.ROOK);
-            }}
-          ></div>
-          <div
-            className={getPromotionClassname(PieceEnum.BISHOP)}
-            onClick={() => {
-              choosePiece(PieceEnum.BISHOP);
-            }}
-          ></div>
-          <div
-            className={getPromotionClassname(PieceEnum.KNIGHT)}
-            onClick={() => {
-              choosePiece(PieceEnum.KNIGHT);
-            }}
-          ></div>
+          <PromotionPiece piece={PieceEnum.QUEEN} />
+          <PromotionPiece piece={PieceEnum.ROOK} />
+          <PromotionPiece piece={PieceEnum.BISHOP} />
+          <PromotionPiece piece={PieceEnum.KNIGHT} />
           )
         </div>
       )}
