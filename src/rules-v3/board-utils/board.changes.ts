@@ -5,6 +5,7 @@ import {
   areSameCoordinates,
   getPiece,
   isCellUnderAttack,
+  isPawnPromoting,
   isSamePiece,
   oppositeColor,
 } from "./board.utils";
@@ -82,17 +83,14 @@ export function doMove(board: Board, piece: Piece, dest: Coordinates): Board {
 
 export function doPromotion(
   board: Board,
-  pawn: Piece,
   dest: Coordinates,
   to: PieceEnum
 ): Board {
+  const pawn = getPiece(board, dest)!;
+  const newPiece = { ...pawn, piece: to };
   return {
     ...board,
-    pieces: board.pieces
-      .filter((p) => !isSamePiece(p, pawn))
-      .map((p) =>
-        isSamePiece(p, pawn) ? { ...p, coordinates: dest, piece: to } : p
-      ),
+    pieces: board.pieces.map((p) => (isSamePiece(p, pawn) ? newPiece : p)),
   };
 }
 
@@ -121,9 +119,6 @@ export function changePosition(
   move: MoveInfo
 ): Board {
   const newBoard = structuredClone(board);
-  newBoard.turn =
-    newBoard.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
-  newBoard.amountOfMoves++;
 
   if (move.capture) {
     return doCapture(newBoard, piece, move.dest);
@@ -191,7 +186,7 @@ export function validateMoves(
 export function performMove(
   board: Board,
   start: Coordinates,
-  dest: Coordinates
+  dest: Coordinates,
 ): Board | undefined {
   const piece = getPiece(board, start)!;
   const validMoves = getValidatedMoves(board, piece);
@@ -203,15 +198,34 @@ export function performMove(
     return undefined;
   }
 
-  const newBoard =  changePosition(board, piece, validMove);
+  const newBoard = changePosition(board, piece, validMove);
+  return newBoard;
+}
+
+export function updateBoard(newBoard: Board): Board {
   if (isKingInCheck(newBoard, newBoard.turn)) {
     const kingCoordinates = newBoard.pieces.find(
       (p) => p.piece === PieceEnum.KING && p.color === newBoard.turn
     )!.coordinates;
-    newBoard.kingInCheck = kingCoordinates; 
+    newBoard.kingInCheck = kingCoordinates;
   } else {
     newBoard.kingInCheck = undefined;
   }
 
   return newBoard;
+}
+
+export function promotePawn(
+  board: Board,
+  dest: Coordinates,
+  choice: PieceEnum
+): Board {
+  return updateBoard(doPromotion(board, dest, choice));
+}
+
+export function finishMove(board: Board): Board {
+  board.turn =
+    board.turn === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
+  board.amountOfMoves++;
+  return updateBoard(board);
 }

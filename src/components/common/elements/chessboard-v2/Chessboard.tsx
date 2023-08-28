@@ -12,12 +12,15 @@ import {
   makeMove,
 } from "@/rules-v2/moves/moves";
 import {
+  finishMove,
   getValidatedMoves as gvm,
   performMove,
+  promotePawn,
 } from "@/rules-v3/board-utils/board.changes";
 import Cell from "../cell-v2/Cell";
 import { MoveInfo } from "@/models/MoveInfo";
 import { ColorEnum, PieceEnum } from "@/utils/enums";
+import { isPawnPromoting } from "@/rules-v3/board-utils";
 
 export default function Chessboard() {
   const chessBoardRef = useRef<HTMLDivElement>(null);
@@ -27,9 +30,14 @@ export default function Chessboard() {
   const [validMoves, setValidMoves] = useState<MoveInfo[]>([]);
 
   const [startPos, setStartPos] = useState<Coordinates | null>(null);
-  const [showPromotion, setShowPromotion] = useState<boolean>(true);
+  const [endPos, setEndPos] = useState<Coordinates | null>(null);
+  const [showPromotion, setShowPromotion] = useState<boolean>(false);
+  const [allowMoves, setAllowMoves] = useState<boolean>(true);
 
   function grabPiece(e: React.MouseEvent<HTMLDivElement>) {
+    if (!allowMoves) {
+      return;
+    }
     const piece = e.target as HTMLDivElement;
     if (
       piece.classList.contains(pieceStyles["piece"]) &&
@@ -89,14 +97,22 @@ export default function Chessboard() {
         7 - Math.floor(relativeY / 100),
       ];
 
+      setEndPos({ x: cellX, y: cellY });
+
       const newBoard = performMove(board, startPos!, { x: cellX, y: cellY });
 
-      if (newBoard) {
-        setBoard(newBoard);
-      } else {
+      if (!newBoard) {
         grabbedPiece.style.transform = `translate(${startPos!.x * 100}%, ${
           (7 - startPos!.y) * 100
         }%)`;
+      } else {
+        if (isPawnPromoting(board, startPos!, { x: cellX, y: cellY })) {
+          setShowPromotion(true);
+          setAllowMoves(false);
+          setBoard(newBoard);
+        } else {
+          setBoard(finishMove(newBoard));
+        }
       }
 
       grabbedPiece.classList.remove(pieceStyles["grabbing"]);
@@ -104,6 +120,21 @@ export default function Chessboard() {
       setStartPos(null);
       setValidMoves([]);
     }
+  }
+
+  function choosePiece(piece: PieceEnum) {
+    setBoard(finishMove(promotePawn(board, endPos!, PieceEnum.QUEEN)));
+    setShowPromotion(false);
+    setAllowMoves(true);
+    setEndPos(null);
+  }
+
+  function getPromotionClassname(piece: PieceEnum) {
+    return `
+      ${styles["promotion-piece"]} 
+      ${pieceStyles[`${board.turn}`]} 
+      ${pieceStyles[`${piece}`]}
+    `;
   }
 
   const pieces = [];
@@ -117,6 +148,21 @@ export default function Chessboard() {
       />
     );
     keyCounter++;
+  }
+
+  function PromotionPiece(props: { piece: PieceEnum }) {
+    return (
+      <div
+        className={`
+          ${styles["promotion-piece"]} 
+          ${pieceStyles[`${board.turn}`]} 
+          ${pieceStyles[`${props.piece}`]}
+        `}
+        onClick={() => {
+          choosePiece(props.piece);
+        }}
+      ></div>
+    );
   }
 
   const validMovesElements = [];
@@ -156,6 +202,15 @@ export default function Chessboard() {
       {validMovesElements}
       {additionalElements}
       {pieces}
+      {showPromotion && (
+        <div className={styles["promotion"]}>
+          <PromotionPiece piece={PieceEnum.QUEEN} />
+          <PromotionPiece piece={PieceEnum.ROOK} />
+          <PromotionPiece piece={PieceEnum.BISHOP} />
+          <PromotionPiece piece={PieceEnum.KNIGHT} />
+          )
+        </div>
+      )}
     </div>
   );
 }

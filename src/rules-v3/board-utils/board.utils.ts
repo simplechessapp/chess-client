@@ -75,3 +75,8 @@ export function isCellUnderAttack(
 export function oppositeColor(color: ColorEnum): ColorEnum {
   return color === ColorEnum.WHITE ? ColorEnum.BLACK : ColorEnum.WHITE;
 }
+
+export function isPawnPromoting(board: Board, startPos: Coordinates, dest: Coordinates) {
+  const piece = getPiece(board, startPos)!;
+  return piece.piece === PieceEnum.PAWN && (dest.y === 0 || dest.y === 7);
+}
